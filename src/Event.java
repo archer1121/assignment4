@@ -10,12 +10,15 @@ import java.time.ZonedDateTime;
 
 // Documentation + Tests are needed for class and builder.
 public class Event {
+  public static EventBuilder getBuilder() {
+    return new EventBuilder();
+  }
   private static final ZoneId est = ZoneId.of("America/New_York");
   public static class EventBuilder {
     private final  String subject;
-    private final Location location; // optional
     private final LocalDate startDate;
     private final LocalTime startTime;
+    private final Location location; // optional
     private final LocalDate endDate; // optional
     private final LocalTime endTime; // optional
     private final String description; // optional
@@ -198,7 +201,6 @@ public class Event {
   }
 
 
-
   private Event(
     String subject, Location location, Status status,
     ZonedDateTime startDateAndTime, ZonedDateTime endDateAndTime,
@@ -212,8 +214,6 @@ public class Event {
     this.description = description;
   }
 
-  public static EventBuilder getBuilder() {
-    return new EventBuilder();
-  }
+
 
 }
