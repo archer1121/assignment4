@@ -1,4 +1,3 @@
-import java.security.MessageDigest;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -9,31 +8,30 @@ import java.time.ZonedDateTime;
  */
 
 // Documentation + Tests are needed for class and builder.
-public class Event {
-  public static EventBuilder getBuilder() {
-    return new EventBuilder();
-  }
-  private static final ZoneId est = ZoneId.of("America/New_York");
+public class Event implements IEvent {
+
+  // private static final ZoneId est = ZoneId.of("America/New_York");
+  private static final IDateFacade facade = new DateFacadeImpl();
+
   public static class EventBuilder {
-    private final  String subject;
+    private final String subject;
     private final LocalDate startDate;
     private final LocalTime startTime;
-    private final Location location; // optional
+    private final EventLocation location; // optional
     private final LocalDate endDate; // optional
     private final LocalTime endTime; // optional
     private final String description; // optional
-    private final Status status; // optional
+    private final EventStatus status; // optional
     private final String message;
 
-
-
     // no public constructor, as the .getBuilder() method is the entry point for construction.
+    // if extra time, handle daylight savings
     private EventBuilder() {
-      this.subject = null;
-      this.startTime = null;
-      this.status = null;
-      this.message = "";
-      description = "";
+      subject = null;
+      startTime = null;
+      status = null;
+      message = null;
+      description = null;
       endDate = null;
       endTime = null;
       location = null;
@@ -41,10 +39,10 @@ public class Event {
     }
 
     private EventBuilder(
-            String subject, Location location,
+            String subject, EventLocation location,
             LocalDate startDate, LocalTime startTime,
             LocalDate endDate, LocalTime endTime,
-            String description, Status status, String message) {
+            String description, EventStatus status, String message) {
       this.subject = subject;
       this.location = location;
       this.startDate = startDate;
@@ -80,7 +78,7 @@ public class Event {
       );
     }
 
-    public EventBuilder location(Location location) {
+    public EventBuilder location(EventLocation location) {
       String message;
       message = "location set to: " + location;
       return new EventBuilder(
@@ -98,7 +96,7 @@ public class Event {
       }
       return new EventBuilder(
               this.subject, this.location,
-              LocalDate.of(day, month, year), this.startTime,
+              facade.dateOf(day, month, year), this.startTime,
               this.endDate, this.endTime, this.description,
               this.status, message
       );
@@ -111,7 +109,7 @@ public class Event {
       }
       return new EventBuilder(
               this.subject, this.location,
-              this.startDate, LocalTime.of(hour, minute),
+              this.startDate, facade.timeOf(hour, minute),
               this.endDate, this.endTime, this.description,
               this.status, message
       );
@@ -125,7 +123,7 @@ public class Event {
       return new EventBuilder(
               this.subject, this.location,
               this.startDate, this.startTime,
-              this.endDate, LocalTime.of(hour, minute), this.description,
+              this.endDate, facade.timeOf(hour, minute), this.description,
               this.status, message
       );
     }
@@ -138,12 +136,12 @@ public class Event {
       return new EventBuilder(
               this.subject, this.location,
               this.startDate, this.startTime,
-              LocalDate.of(day, month, year), this.endTime, this.description,
+              facade.dateOf(day, month, year), this.endTime, this.description,
               this.status, message
       );
     }
 
-    public EventBuilder status(Status status) {
+    public EventBuilder status(EventStatus status) {
       String message = "Status set to " + status;
       return new EventBuilder(
               this.subject, this.location,
@@ -158,7 +156,7 @@ public class Event {
     }
 
     public Event build() {
-      if (startDate == null || startTime == null || subject == null ) {
+      if (startDate == null || startTime == null || subject == null) {
         throw new IllegalArgumentException(
                 "The start date, time, and the subject of the event must all be set"
         );
@@ -171,49 +169,75 @@ public class Event {
         return new EventBuilder(
                 this.subject, this.location,
                 this.startDate, LocalTime.of(8, 0),
-                LocalDate.of(defaultYear, defaultMonth, defaultDay), LocalTime.of(5, 0),
+                LocalDate.of(defaultYear, defaultMonth, defaultDay), LocalTime.of(17, 0),
                 this.description, this.status, this.message
         ).build();
       }
 
-      ZonedDateTime startDateAndTime = ZonedDateTime.of(startDate, startTime, est);
-      ZonedDateTime endDateAndTime = ZonedDateTime.of(endDate, endTime, est);
-
-      return new Event(subject, location, status, startDateAndTime, endDateAndTime, description);
+      return new Event(subject, location, status,
+              startDate, startTime, endDate, startTime, description);
     }
   }
 
   private final String subject;
-  private final Location location;
-  private final Status status;
-  private final ZonedDateTime startDateAndTime;
-  private final ZonedDateTime endDateAndTime; // optional
+  private final LocalDate startDate;
+  private final LocalTime startTime;
+  private final EventLocation location; // optional
+  private final EventStatus status; // optional
+  private final LocalDate endDate; // optional
+  private final LocalTime endTime; // optional
   private final String description; // optional
 
-  public enum Location {
-    PHYSICAL,
-    ONLINE
-  }
-
-  public enum Status {
-    PUBLIC,
-    PRIVATE,
-  }
-
-
   private Event(
-    String subject, Location location, Status status,
-    ZonedDateTime startDateAndTime, ZonedDateTime endDateAndTime,
-    String description
+          String subject, EventLocation location, EventStatus status,
+          LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime,
+          String description
   ) {
     this.subject = subject;
     this.location = location;
     this.status = status;
-    this.startDateAndTime = startDateAndTime;
-    this.endDateAndTime = endDateAndTime;
+    this.startDate = startDate;
+    this.startTime = startTime;
+    this.endDate = endDate;
+    this.endTime = endTime;
     this.description = description;
   }
 
+  public static EventBuilder getBuilder() {
+    return new EventBuilder();
+  }
 
+  @Override
+  public String getSubject() {
+    return subject;
+  }
+  @Override
+  public LocalDate getStartDate() {
+    return startDate;
+  }
+  @Override
+  public LocalTime getStartTime() {
+    return startTime;
+  }
+  @Override
+  public LocalDate getEndDate() {
+    return endDate;
+  }
+  @Override
+  public LocalTime getEndTime() {
+    return endTime;
+  }
+  @Override
+  public EventLocation getLocation() {
+    return location;
+  }
+  @Override
+  public EventStatus getStatus() {
+    return status;
+  }
+  @Override
+  public String getDescription() {
+    return description;
+  }
 
 }
