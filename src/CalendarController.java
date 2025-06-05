@@ -1,7 +1,5 @@
 import java.util.Scanner;
 
-import jdk.jfr.Event;
-
 public class CalendarController {
 
   Readable in;
@@ -11,7 +9,7 @@ public class CalendarController {
     this.in = readable;
     this.out = appendable;
   }
-  public void go() {
+  public void go(Calendar calendarModel) {
 
     Scanner s = new Scanner(this.in);
     //Calendar calendar = new EventCalendar();

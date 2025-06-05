@@ -7,9 +7,8 @@ import java.io.InputStreamReader;
 public class CalendarApp {
 
   public static void main(String[] args) {
-
-
     String usage = "Usage: java CalendarApp.java --mode <interactive|headless> [commandsFile]";
+
     // 1. Make sure we have at least two tokens: "--mode" and its value
     if (args.length < 2) {
       System.err.println("ERROR: Not enough arguments.");
@@ -30,16 +29,11 @@ public class CalendarApp {
     if (modeValue.equals("interactive")) { //-------------------------------------------------------
 
       System.out.println("interactive mode bruh"); // run it here
-      try {
-        new CalendarController(new InputStreamReader(System.in), System.out)
-                .go(new EventCalendar());
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      new CalendarController(new InputStreamReader(System.in), System.out)
+              .go(new CalendarModel());
 
-      //CalendarController controller = new CalendarController(new InputStreamReader(System.in), System.out);
-      //controller.go();
-    } else if (modeValue.equals("headless")) { // need to intake a command file ----------------------
+    }
+    else if (modeValue.equals("headless")) { // need to intake a command file ----------------------
       // In headless mode, we expect a third argument: the path to commands.txt
       if (args.length < 3) {
         System.err.println("ERROR: Headless mode requires a commands file after --mode headless");
@@ -49,15 +43,10 @@ public class CalendarApp {
       String commandsFile = args[2];
       System.out.println("headless mode bruh" + commandsFile); //run it here
 
-
       try (BufferedReader reader = new BufferedReader(new FileReader(commandsFile))) {
 
-        try {
-          new CalendarController(reader, System.out)
-                  .go(new EventCalendar());
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
+        new CalendarController(reader, System.out)
+                .go(new CalendarModel());
 
       } catch (FileNotFoundException e) {
         System.err.println("File not found: " + commandsFile);
