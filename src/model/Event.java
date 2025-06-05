@@ -1,7 +1,8 @@
+package model;
+
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 /**
  *
@@ -11,7 +12,7 @@ import java.time.ZonedDateTime;
 public class Event implements IEvent {
 
   // private static final ZoneId est = ZoneId.of("America/New_York");
-  private static final IDateFacade facade = new DateFacadeImpl();
+  private static final IDateTimeFacade facade = new DateTimeFacade();
 
   public static class EventBuilder {
     private final String subject;
@@ -94,12 +95,19 @@ public class Event implements IEvent {
       if (startTime == null) {
         message += " , but there's no start time";
       }
-      return new EventBuilder(
-              this.subject, this.location,
-              facade.dateOf(day, month, year), this.startTime,
-              this.endDate, this.endTime, this.description,
-              this.status, message
-      );
+      try {
+        return new EventBuilder(
+                this.subject, this.location,
+                facade.dateOf(day, month, year), this.startTime,
+                this.endDate, this.endTime, this.description,
+                this.status, message
+        );
+      } catch (DateTimeException e) {
+        throw new IllegalArgumentException(
+                "Cannot set start date to: " + day + "-" + month + "-" + year
+        );
+      }
+
     }
 
     public EventBuilder startTime(int hour, int minute) {
@@ -107,12 +115,17 @@ public class Event implements IEvent {
       if (startDate == null) {
         message += " , but there's no start Date";
       }
-      return new EventBuilder(
-              this.subject, this.location,
-              this.startDate, facade.timeOf(hour, minute),
-              this.endDate, this.endTime, this.description,
-              this.status, message
-      );
+      try {
+        return new EventBuilder(
+                this.subject, this.location,
+                this.startDate, facade.timeOf(hour, minute),
+                this.endDate, this.endTime, this.description,
+                this.status, message
+        );
+      } catch (DateTimeException e) {
+        throw new IllegalArgumentException("Cannot set start time to: " + hour + ":" + minute);
+      }
+
     }
 
     public EventBuilder endTime(int hour, int minute) {
@@ -120,12 +133,17 @@ public class Event implements IEvent {
       if (endDate == null) {
         message += " , but there's no end date";
       }
-      return new EventBuilder(
-              this.subject, this.location,
-              this.startDate, this.startTime,
-              this.endDate, facade.timeOf(hour, minute), this.description,
-              this.status, message
-      );
+      try {
+        return new EventBuilder(
+                this.subject, this.location,
+                this.startDate, this.startTime,
+                this.endDate, facade.timeOf(hour, minute),
+                this.description, this.status, message
+        );
+      } catch (DateTimeException e) {
+        throw new IllegalArgumentException("cannot set end time to: " + hour + ":" + minute);
+      }
+
     }
 
     public EventBuilder endDate(int day, int month, int year) {
@@ -133,12 +151,19 @@ public class Event implements IEvent {
       if (endTime == null) {
         message += " , but there's no end time";
       }
-      return new EventBuilder(
-              this.subject, this.location,
-              this.startDate, this.startTime,
-              facade.dateOf(day, month, year), this.endTime, this.description,
-              this.status, message
-      );
+      try {
+        return new EventBuilder(
+                this.subject, this.location,
+                this.startDate, this.startTime,
+                facade.dateOf(day, month, year), this.endTime, this.description,
+                this.status, message
+        );
+      } catch (DateTimeException e) {
+        throw new IllegalArgumentException(
+                "Cannot set end date to: " + day + "-" + month + "-" + year
+        );
+      }
+
     }
 
     public EventBuilder status(EventStatus status) {
@@ -174,23 +199,40 @@ public class Event implements IEvent {
         ).build();
       }
 
+      if (startDate.equals(endDate)) {
+        if (facade.isAfter(startTime, endTime)) {
+          throw new IllegalArgumentException(
+                  "Start time cannot be after end time when their dates are the same"
+          );
+        }
+      } else if (facade.isAfter(startDate, endDate)) {
+        throw new IllegalArgumentException(
+                "Invalid Start and end dates: " + startDate + ", " + endDate
+        );
+      }
+
       return new Event(subject, location, status,
-              startDate, startTime, endDate, startTime, description);
+              startDate, startTime, endDate, endTime, description);
     }
   }
 
   private final String subject;
   private final LocalDate startDate;
   private final LocalTime startTime;
-  private final EventLocation location; // optional
-  private final EventStatus status; // optional
   private final LocalDate endDate; // optional
   private final LocalTime endTime; // optional
+  private final EventLocation location; // optional
+  private final EventStatus status; // optional
   private final String description; // optional
 
   private Event(
-          String subject, EventLocation location, EventStatus status,
-          LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime,
+          String subject,
+          EventLocation location,
+          EventStatus status,
+          LocalDate startDate,
+          LocalTime startTime,
+          LocalDate endDate,
+          LocalTime endTime,
           String description
   ) {
     this.subject = subject;
@@ -211,33 +253,66 @@ public class Event implements IEvent {
   public String getSubject() {
     return subject;
   }
+
   @Override
   public LocalDate getStartDate() {
     return startDate;
   }
+
   @Override
   public LocalTime getStartTime() {
     return startTime;
   }
+
   @Override
   public LocalDate getEndDate() {
     return endDate;
   }
+
   @Override
   public LocalTime getEndTime() {
     return endTime;
   }
+
   @Override
   public EventLocation getLocation() {
     return location;
   }
+
   @Override
   public EventStatus getStatus() {
     return status;
   }
+
   @Override
   public String getDescription() {
     return description;
   }
 
+  @Override
+  public boolean isAllDayEvent() {
+    return startDate.equals(endDate) && startTime.getHour() <= 8 && endTime.getHour() >= 17;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o instanceof Event) {
+      Event other = (Event) o;
+      return (subject.equals(other.subject)
+              && facade.dateEquals(startDate, other.startDate)
+              && facade.timeEquals(startTime, other.startTime)
+              && facade.dateEquals(endDate, other.endDate)
+              && facade.timeEquals(endTime, other.endTime));
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return subject.hashCode() + startDate.hashCode() + startTime.hashCode()
+            + endDate.hashCode() + endTime.hashCode();
+  }
 }

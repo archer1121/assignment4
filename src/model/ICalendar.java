@@ -1,7 +1,9 @@
+package model;
+
 import java.time.LocalDate;
 import java.util.List;
 
-public interface Calendar {
+public interface ICalendar {
 
   void createEvent();
 

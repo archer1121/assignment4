@@ -1,4 +1,8 @@
+package controller;
+
 import java.util.Scanner;
+
+import model.ICalendar;
 
 public class CalendarController {
 
@@ -9,10 +13,10 @@ public class CalendarController {
     this.in = readable;
     this.out = appendable;
   }
-  public void go(Calendar calendarModel) {
+  public void go(ICalendar calendarModel) {
 
     Scanner s = new Scanner(this.in);
-    //Calendar calendar = new EventCalendar();
+    //model.Calendar calendar = new EventCalendar();
     while (s.hasNext()) {
       String in = s.next().trim();
       int firstSpace = in.indexOf(' ');

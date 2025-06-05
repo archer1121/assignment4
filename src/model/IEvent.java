@@ -1,3 +1,5 @@
+package model;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -17,4 +19,6 @@ public interface IEvent {
   EventStatus getStatus();
 
   String getDescription();
+
+  boolean isAllDayEvent();
 }

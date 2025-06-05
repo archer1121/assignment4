@@ -1,7 +1,9 @@
+package model;
+
 import java.time.LocalDate;
 import java.util.List;
 
-public class CalendarModel implements Calendar{
+public class Calendar implements ICalendar {
   @Override
   public void createEvent() {
     System.out.println("createEvent in model triggered");

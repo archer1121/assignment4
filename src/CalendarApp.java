@@ -4,6 +4,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import controller.CalendarController;
+import model.Calendar;
+
 public class CalendarApp {
 
   public static void main(String[] args) {
@@ -30,7 +33,7 @@ public class CalendarApp {
 
       System.out.println("interactive mode bruh"); // run it here
       new CalendarController(new InputStreamReader(System.in), System.out)
-              .go(new CalendarModel());
+              .go(new Calendar());
 
     }
     else if (modeValue.equals("headless")) { // need to intake a command file ----------------------
@@ -46,7 +49,7 @@ public class CalendarApp {
       try (BufferedReader reader = new BufferedReader(new FileReader(commandsFile))) {
 
         new CalendarController(reader, System.out)
-                .go(new CalendarModel());
+                .go(new Calendar());
 
       } catch (FileNotFoundException e) {
         System.err.println("File not found: " + commandsFile);
