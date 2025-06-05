@@ -2,10 +2,12 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class CalendarApp {
 
   public static void main(String[] args) {
+
 
     String usage = "Usage: java CalendarApp.java --mode <interactive|headless> [commandsFile]";
     // 1. Make sure we have at least two tokens: "--mode" and its value
@@ -28,8 +30,16 @@ public class CalendarApp {
     if (modeValue.equals("interactive")) { //-------------------------------------------------------
 
       System.out.println("interactive mode bruh"); // run it here
-    }
-    else if (modeValue.equals("headless")) { // need to intake a command file ----------------------
+      try {
+        new CalendarController(new InputStreamReader(System.in), System.out)
+                .go(new EventCalendar());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+      //CalendarController controller = new CalendarController(new InputStreamReader(System.in), System.out);
+      //controller.go();
+    } else if (modeValue.equals("headless")) { // need to intake a command file ----------------------
       // In headless mode, we expect a third argument: the path to commands.txt
       if (args.length < 3) {
         System.err.println("ERROR: Headless mode requires a commands file after --mode headless");
@@ -39,26 +49,24 @@ public class CalendarApp {
       String commandsFile = args[2];
       System.out.println("headless mode bruh" + commandsFile); //run it here
 
+
       try (BufferedReader reader = new BufferedReader(new FileReader(commandsFile))) {
 
-        String line;
-        while ((line = reader.readLine()) != null) {
-          // 'line' is one command string from the file
-          System.out.println("Read command: " + line);
-
-
+        try {
+          new CalendarController(reader, System.out)
+                  .go(new EventCalendar());
+        } catch (IOException e) {
+          e.printStackTrace();
         }
-      }
-      catch (FileNotFoundException e) {
+
+      } catch (FileNotFoundException e) {
         System.err.println("File not found: " + commandsFile);
         System.exit(1);
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         System.err.println("I/O error reading file: " + e.getMessage());
         System.exit(1);
       }
-    }
-    else {
+    } else {
       System.err.println("ERROR: Unknown mode \"" + args[1] + "\". Must be either \"interactive\" or \"headless\".");
       System.err.println(usage);
       System.exit(1);
