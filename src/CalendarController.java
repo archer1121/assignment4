@@ -14,42 +14,26 @@ public class CalendarController {
   public void go() {
 
     Scanner s = new Scanner(this.in);
-    Calendar calendar = new EventCalendar();
+    //Calendar calendar = new EventCalendar();
     while (s.hasNext()) {
-      String in = s.next();
-      switch(in) {
-        case "q":
-        case "quit":
-          return;
+      String in = s.next().trim();
+      int firstSpace = in.indexOf(' ');
+      String startingWord = in.substring(0, firstSpace);
+      switch(startingWord) {
+        case "create":
+          System.out.println("create");
+          break;
+
+        case "edit":
+          System.out.println("edit");
+          break;
+        case "print":
+          System.out.println("print");
+          break;
         case "show":
-          for (Line l : m.getLines()) {
-            System.out.println(l);
-          }
+          System.out.println("show");
           break;
-        case "move":
-          try {
-            double d = s.nextDouble();
-            m.move(d);
-          } catch (InputMismatchException ime) {
-            ...
-          }
-          break;
-        case "trace":
-          try {
-            double d = s.nextDouble();
-            m.trace(d);
-          } catch (InputMismatchException ime) {
-            ...
-          }
-          break;
-        case "turn":
-          try {
-            double d = s.nextDouble();
-            m.turn(d);
-          } catch (InputMismatchException ime) {
-            ...
-          }
-          break;
+
         default:
           System.out.println(String.format("Unknown command %s", in));
           break;
