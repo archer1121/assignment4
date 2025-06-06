@@ -314,4 +314,19 @@ public class EventTest {
             .buildEvent();
     assertEquals(e1, e2);
   }
+
+  @Test
+  public void editEventEditsEvent() {
+    Event e1 = builder.subject("Camping")
+            .startDate(1, 1, 2021)
+            .startTime(8, 0)
+            .endDate(2, 1, 2021)
+            .endTime(17, 0)
+            .buildEvent();
+
+    Event.EventBuilder eventEditor = Event.editEvent(e1);
+
+    IEvent edited = eventEditor.startTime(7,0).buildEvent();
+    assertEquals(facade.timeOf(7, 0), edited.getStartTime());
+  }
 }

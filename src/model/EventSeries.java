@@ -104,7 +104,7 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
     }
 
     public EventSeries buildSeries() {
-      IEvent event = eventBuilder.buildEvent();
+      Event event = eventBuilder.buildEvent();
       if (!event.getStartDate().equals(event.getEndDate())) {
         throw new IllegalArgumentException(
                 "Cannot build event series with an event with different start and end dates"
@@ -114,7 +114,7 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
     }
   }
 
-  private final IEvent baseEvent;
+  private final Event baseEvent;
   private final Set<DayOfWeek> weekDays;
   private final LocalDate endDate;
 
@@ -124,7 +124,15 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
     return new EventSeriesBuilder();
   }
 
-  private EventSeries(IEvent event, Set<DayOfWeek> weekDays, LocalDate endDate) {
+  public static EventSeriesBuilder editSeries(EventSeries series) {
+    return new EventSeriesBuilder(
+      Event.editEvent(series.baseEvent),
+      series.weekDays,
+      series.endDate,
+      series.baseEvent.getStartDate());
+  }
+
+  private EventSeries(Event event, Set<DayOfWeek> weekDays, LocalDate endDate) {
     this.baseEvent = event;
     this.weekDays = weekDays;
     this.endDate = endDate;

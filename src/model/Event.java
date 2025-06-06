@@ -179,7 +179,7 @@ public class Event implements IEvent {
       return message;
     }
 
-    public IEvent buildEvent() {
+    public Event buildEvent() {
       if (startDate == null || startTime == null || subject == null) {
         throw new IllegalArgumentException(
                 "The start date, time, and the subject of the event must all be set"
@@ -248,7 +248,15 @@ public class Event implements IEvent {
     return new EventBuilder();
   }
 
-  @Override
+  public static EventBuilder editEvent(Event event) {
+    return new EventBuilder(
+            event.subject, event.location,
+            event.startDate, event.startTime,
+            event.endDate, event.endTime, event.description,
+            event.status, ""
+    );
+  }
+
   public String getSubject() {
     return subject;
   }
