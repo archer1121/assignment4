@@ -9,8 +9,9 @@ import model.Calendar;
 
 public class CalendarApp {
 
+  //READ: PLS DO javac *.java first before running
   public static void main(String[] args) {
-    String usage = "Usage: java CalendarApp.java --mode <interactive|headless> [commandsFile]";
+    String usage = "Usage: java CalendarApp --mode <interactive|headless> [commandsFile]";
 
     // 1. Make sure we have at least two tokens: "--mode" and its value
     if (args.length < 2) {
