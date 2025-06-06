@@ -5,9 +5,9 @@ import java.util.List;
 
 public interface ICalendar {
 
-  void createEvent();
+  void createEvent(Event event);
 
-  void createEventSeries();
+  void createEventSeries(List<Event> series);
 
   void editEvent(Event event);
 
