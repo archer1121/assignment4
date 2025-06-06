@@ -11,6 +11,14 @@ public class ShowCommand implements Command {
   }
   @Override
   public void execute(ICalendar model) {
-
+// Expect exactly: "show status on <dateTime>"
+    if (command.contains("show status on ")) {
+      String dateTimeString = Command.getWordAfter("on", command);
+//      LocalDateTime dateTime = LocalDateTime.parse(dateTimeString);
+//
+//      boolean busy = model.isBusyAt(dateTime);
+//      System.out.println(busy ? "Busy" : "Available");
+//      return;
+    }
   }
 }

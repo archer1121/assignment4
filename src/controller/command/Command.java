@@ -42,4 +42,46 @@ public interface Command {
     }
     return trimmed.substring(0, spaceIdx);
   }
+
+  static String getWordAfter(String wordBefore, String command) throws IllegalArgumentException {
+    if (wordBefore == null || wordBefore.isEmpty()) {
+      throw new IllegalArgumentException("wordBefore must be non‐empty");
+    }
+    if (command == null) {
+      throw new IllegalArgumentException("command must not be null");
+    }
+
+    // 1) Find the index of the first occurrence of wordBefore
+    int beforeIdx = command.indexOf(wordBefore);
+    if (beforeIdx < 0) {
+      throw new IllegalArgumentException(
+              String.format("The token \"%s\" was not found in: \"%s\"", wordBefore, command)
+      );
+    }
+
+    // 2) Advance past `wordBefore`
+    int cursor = beforeIdx + wordBefore.length();
+
+    // 3) Skip any whitespace after wordBefore
+    while (cursor < command.length() && Character.isWhitespace(command.charAt(cursor))) {
+      cursor++;
+    }
+
+    // 4) If we've reached the end of the string, there's no word after
+    if (cursor >= command.length()) {
+      throw new IllegalArgumentException(
+              String.format("No word found after \"%s\" in: \"%s\"", wordBefore, command)
+      );
+    }
+
+    // 5) Now `cursor` is at the start of the next word; find its end
+    int startOfNextWord = cursor;
+    while (cursor < command.length() && !Character.isWhitespace(command.charAt(cursor))) {
+      cursor++;
+    }
+    int endOfNextWord = cursor;
+
+    // 6) Extract and return the word
+    return command.substring(startOfNextWord, endOfNextWord);
+  }
 }
