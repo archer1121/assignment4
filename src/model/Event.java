@@ -1,5 +1,6 @@
 package model;
 
+import java.lang.reflect.Field;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -25,8 +26,6 @@ public class Event implements IEvent {
     private final EventStatus status; // optional
     private final String message;
 
-    // no public constructor, as the .getBuilder() method is the entry point for construction.
-    // if extra time, handle daylight savings
     private EventBuilder() {
       subject = null;
       startTime = null;
@@ -180,7 +179,7 @@ public class Event implements IEvent {
       return message;
     }
 
-    public Event build() {
+    public IEvent buildEvent() {
       if (startDate == null || startTime == null || subject == null) {
         throw new IllegalArgumentException(
                 "The start date, time, and the subject of the event must all be set"
@@ -196,7 +195,7 @@ public class Event implements IEvent {
                 this.startDate, LocalTime.of(8, 0),
                 LocalDate.of(defaultYear, defaultMonth, defaultDay), LocalTime.of(17, 0),
                 this.description, this.status, this.message
-        ).build();
+        ).buildEvent();
       }
 
       if (startDate.equals(endDate)) {
@@ -292,6 +291,14 @@ public class Event implements IEvent {
   @Override
   public boolean isAllDayEvent() {
     return startDate.equals(endDate) && startTime.getHour() <= 8 && endTime.getHour() >= 17;
+  }
+
+  @Override
+  public String toString() {
+    return String.format(
+            "subject=%s_location=%s_status=%s_startDate=%s_startTime=%s_endDate=%s_endTime=%s",
+            subject, location, status, startDate, startTime, endDate, endTime
+    );
   }
 
   @Override

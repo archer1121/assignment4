@@ -6,6 +6,7 @@ import model.Event;
 import model.EventLocation;
 import model.EventStatus;
 import model.IDateTimeFacade;
+import model.IEvent;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -30,26 +31,26 @@ public class EventTest {
     assertThrows(IllegalArgumentException.class, () -> builder.subject(null)
             .startDate(1, 1, 2021)
             .startTime(10, 0)
-            .build());
+            .buildEvent());
   }
 
   @Test
   public void eventThrowsForNoStartDate() {
     assertThrows(IllegalArgumentException.class, () -> builder.subject("Fishing")
             .startTime(10, 0)
-            .build());
+            .buildEvent());
   }
 
   @Test
   public void eventThrowsForNoStartTime() {
     assertThrows(IllegalArgumentException.class, () -> builder.subject("Fishing")
             .startDate(1, 1, 2021)
-            .build());
+            .buildEvent());
   }
 
   @Test
   public void builderThrowsWhenNoFieldsAreSet() {
-    assertThrows(IllegalArgumentException.class, () -> builder.build());
+    assertThrows(IllegalArgumentException.class, () -> builder.buildEvent());
   }
 
   @Test
@@ -58,7 +59,7 @@ public class EventTest {
       builder.subject("Fishing")
               .startDate(1, 1, 2021)
               .startTime(10, 0)
-              .build();
+              .buildEvent();
     } catch (IllegalArgumentException e) {
       fail(e.getMessage());
     }
@@ -76,7 +77,7 @@ public class EventTest {
               .description("we are fishing")
               .location(EventLocation.PHYSICAL)
               .status(EventStatus.PUBLIC)
-              .build();
+              .buildEvent();
     } catch (IllegalArgumentException e) {
       fail();
     }
@@ -84,7 +85,7 @@ public class EventTest {
 
   @Test
   public void EventGettersWork() {
-    Event fishingEvent = builder
+    IEvent fishingEvent = builder
             .subject("Fishing")
             .startDate(1, 1, 2021)
             .endDate(1, 1, 2021)
@@ -93,7 +94,7 @@ public class EventTest {
             .description("we are fishing")
             .location(EventLocation.PHYSICAL)
             .status(EventStatus.PUBLIC)
-            .build();
+            .buildEvent();
 
     assertEquals("Fishing", fishingEvent.getSubject());
     assertEquals(facade.dateOf(1, 1, 2021), fishingEvent.getStartDate());
@@ -115,7 +116,7 @@ public class EventTest {
                     .startTime(10, 0)
                     .endDate(1, 1, 2020)
                     .endTime(1, 0)
-                    .build());
+                    .buildEvent());
   }
 
   @Test
@@ -126,7 +127,7 @@ public class EventTest {
                     .startTime(23, 0)
                     .endDate(1, 1, 2021)
                     .endTime(9, 0)
-                    .build());
+                    .buildEvent());
   }
 
   @Test
@@ -137,7 +138,7 @@ public class EventTest {
               .startTime(23, 0)
               .endDate(2, 1, 2021)
               .endTime(9, 0)
-              .build();
+              .buildEvent();
     } catch (IllegalArgumentException e) {
       fail(e.getMessage());
     }
@@ -146,28 +147,28 @@ public class EventTest {
 
   @Test
   public void builderSetsEndTimeTo5pm() {
-    Event fishing = builder.subject("Fishing")
+    IEvent fishing = builder.subject("Fishing")
             .startDate(1, 1, 2021)
             .startTime(10, 0)
-            .build();
+            .buildEvent();
     assertEquals(facade.timeOf(17, 0), fishing.getEndTime());
   }
 
   @Test
   public void builderSetsEndDayToStartDayWhenMissing() {
-    Event fishing = builder.subject("Fishing")
+    IEvent fishing = builder.subject("Fishing")
             .startDate(1, 1, 2021)
             .startTime(10, 0)
-            .build();
+            .buildEvent();
     assertEquals(facade.dateOf(1, 1, 2021), fishing.getEndDate());
   }
 
   @Test
   public void nonSetEventFieldsAreAllNull() {
-    Event fishing = builder.subject("Fishing")
+    IEvent fishing = builder.subject("Fishing")
             .startDate(1, 1, 2021)
             .startTime(10, 0)
-            .build();
+            .buildEvent();
     assertNull(fishing.getStatus());
     assertNull(fishing.getLocation());
     assertNull(fishing.getDescription());
@@ -175,116 +176,116 @@ public class EventTest {
 
   @Test
   public void eventIsAllDayIfStarTimeIs8AndEndTimeIs17() {
-    Event fishing = builder.subject("Fishing")
+    IEvent fishing = builder.subject("Fishing")
             .startDate(1, 1, 2021)
             .startTime(8, 0)
             .endDate(1, 1, 2021)
             .endTime(17, 0)
-            .build();
+            .buildEvent();
 
     assertTrue(fishing.isAllDayEvent());
   }
 
   @Test
   public void eventIsNotAllDayIfStarTimeIsAfter8AndEndTimeIsBefore17() {
-    Event fishing = builder.subject("Fishing")
+    IEvent fishing = builder.subject("Fishing")
             .startDate(1, 1, 2021)
             .startTime(9, 0)
             .endDate(1, 1, 2021)
             .endTime(16, 0)
-            .build();
+            .buildEvent();
 
     assertFalse(fishing.isAllDayEvent());
   }
 
   @Test
   public void eventIsAllDayIfStarTimeIsBefore8AndEndTimeIsAfter17() {
-    Event fishing = builder.subject("Fishing")
+    IEvent fishing = builder.subject("Fishing")
             .startDate(1, 1, 2021)
             .startTime(7, 0)
             .endDate(1, 1, 2021)
             .endTime(18, 0)
-            .build();
+            .buildEvent();
 
     assertTrue(fishing.isAllDayEvent());
   }
 
   @Test
   public void eventIsNotAllDayIfStartAndEndDateIsNotTheSame() {
-    Event fishing = builder.subject("Fishing")
+    IEvent fishing = builder.subject("Fishing")
             .startDate(1, 1, 2021)
             .startTime(8, 0)
             .endDate(2, 1, 2021)
             .endTime(17, 0)
-            .build();
+            .buildEvent();
 
     assertFalse(fishing.isAllDayEvent());
   }
 
   @Test
   public void equalsWorksForExactSameEvents() {
-    Event e1 = builder.subject("Fishing")
+    IEvent e1 = builder.subject("Fishing")
             .startDate(1, 1, 2021)
             .startTime(8, 0)
             .endDate(2, 1, 2021)
             .endTime(17, 0)
-            .build();
+            .buildEvent();
 
-    Event e2 = builder.subject("Fishing")
+    IEvent e2 = builder.subject("Fishing")
             .startDate(1, 1, 2021)
             .startTime(8, 0)
             .endDate(2, 1, 2021)
             .endTime(17, 0)
-            .build();
+            .buildEvent();
 
     assertEquals(e1, e2);
   }
 
   @Test
   public void equalsDoesNotWorkForEventsWithDifferingRequiredFields() {
-    Event e1 = builder.subject("Camping")
+    IEvent e1 = builder.subject("Camping")
             .startDate(1, 1, 2021)
             .startTime(8, 0)
             .endDate(2, 1, 2021)
             .endTime(17, 0)
-            .build();
+            .buildEvent();
 
-    Event e2 = builder.subject("Fishing")
+    IEvent e2 = builder.subject("Fishing")
             .startDate(1, 1, 2021)
             .startTime(8, 0)
             .endDate(2, 1, 2021)
             .endTime(17, 0)
-            .build();
-    Event e3 = builder.subject("Fishing")
+            .buildEvent();
+    IEvent e3 = builder.subject("Fishing")
             .startDate(2, 1, 2021)
             .startTime(8, 0)
             .endDate(2, 1, 2021)
             .endTime(17, 0)
-            .build();
-    Event e4 = builder.subject("Fishing")
+            .buildEvent();
+    IEvent e4 = builder.subject("Fishing")
             .startDate(2, 1, 2021)
             .startTime(9, 0)
             .endDate(2, 1, 2021)
             .endTime(17, 0)
-            .build();
-    Event e5 = builder.subject("Fishing")
+            .buildEvent();
+    IEvent e5 = builder.subject("Fishing")
             .startDate(2, 1, 2021)
             .startTime(9, 0)
             .endDate(3, 1, 2021)
             .endTime(17, 0)
-            .build();
-    Event e6 = builder.subject("Fishing")
+            .buildEvent();
+    IEvent e6 = builder.subject("Fishing")
             .startDate(2, 1, 2021)
             .startTime(9, 0)
             .endDate(3, 1, 2021)
             .endTime(18, 0)
-            .build();
-    Event e7 = builder.subject("Fishing")
+            .buildEvent();
+    IEvent e7 = builder.subject("Fishing")
             .startDate(2, 1, 2021)
             .startTime(9, 0)
             .endDate(3, 1, 2021)
             .endTime(19, 0)
-            .build();
+            .buildEvent();
 
     assertNotEquals(e1, e2);
     assertNotEquals(e2, e3);
@@ -296,21 +297,21 @@ public class EventTest {
 
   @Test
   public void equalsIsNotAffectedByOptionalFields() {
-    Event e1 = builder.subject("Fishing")
+    IEvent e1 = builder.subject("Fishing")
             .startDate(1, 1, 2021)
             .startTime(8, 0)
             .endDate(2, 1, 2021)
             .endTime(17, 0)
             .location(EventLocation.PHYSICAL)
-            .build();
+            .buildEvent();
 
-    Event e2 = builder.subject("Fishing")
+    IEvent e2 = builder.subject("Fishing")
             .startDate(1, 1, 2021)
             .startTime(8, 0)
             .endDate(2, 1, 2021)
             .endTime(17, 0)
             .description("we are fishing")
-            .build();
+            .buildEvent();
     assertEquals(e1, e2);
   }
 }
