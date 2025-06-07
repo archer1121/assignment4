@@ -180,7 +180,7 @@ public class EditCommand implements Command {
 
       // 1F) Build and replace
       IEvent updated = builder.buildEvent();
-      model.editEvent((Event) updated);
+      model.editEvent(oldEvent, (Event) updated);
       return;
     }
 
@@ -294,7 +294,7 @@ public class EditCommand implements Command {
       }
 
       IEvent updated = builder.buildEvent();
-      model.editEvent((Event) updated);
+      model.editEvent(oldEvent,(Event) updated);
       return;
     }
 
@@ -397,7 +397,7 @@ public class EditCommand implements Command {
       }
 
       IEvent updated2 = builder2.buildEvent();
-      model.editEvent((Event) updated2);
+      model.editEvent(oldEvent2, (Event) updated2);
       return;
     }
 

@@ -19,7 +19,7 @@ public class Calendar implements ICalendar {
     }
     // Optionally check for duplicates, conflicts, etc.
     eventList.add(e);
-    System.out.println("Added single event: " + e);
+   // System.out.println("Added single event: " + e);
   }
 
 
@@ -29,25 +29,25 @@ public class Calendar implements ICalendar {
       throw new IllegalArgumentException("Event series list cannot be null or empty");
     }
     eventList.addAll(series);
-    System.out.println("Added event series of size: " + series.size());
+    //System.out.println("Added event series of size: " + series.size());
   }
 
   @Override
-  public void editEvent(Event event) {
-    // For simplicity, assume that Event.equals(...) is defined so you can find and replace it.
-    // In practice, you might identify events by subject+start time, etc.
+  public void editEvent(Event oldEvent, Event newEvent) {
+    if (oldEvent == null || newEvent == null) {
+      throw new IllegalArgumentException("Neither oldEvent nor newEvent may be null");
+    }
     int idx = -1;
     for (int i = 0; i < eventList.size(); i++) {
-      if (eventList.get(i).equals(event)) {
+      if (eventList.get(i).equals(oldEvent)) {
         idx = i;
         break;
       }
     }
     if (idx < 0) {
-      throw new IllegalArgumentException("Event to edit not found: " + event);
+      throw new IllegalArgumentException("Event to edit not found: " + oldEvent);
     }
-    eventList.set(idx, event);
-    System.out.println("Edited event: " + event);
+    eventList.set(idx, newEvent);
   }
 
   @Override
@@ -60,7 +60,7 @@ public class Calendar implements ICalendar {
         result.add(e);
       }
     }
-    System.out.println("getScheduleInRange(" + start + ", " + end + ") -> " + result.size() + " events");
+    //System.out.println("getScheduleInRange(" + start + ", " + end + ") -> " + result.size() + " events");
     return result;
   }
 }

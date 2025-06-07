@@ -32,7 +32,12 @@ public class CreateCommandTest {
 
     }
 
-    @Override public void editEvent(model.Event event) { }
+    @Override
+    public void editEvent(Event oldEvent, Event newEvent) {
+
+    }
+
+
     @Override public java.util.List<model.Event> getScheduleInRange(java.time.LocalDate start, java.time.LocalDate end) { return null; }
   };
 

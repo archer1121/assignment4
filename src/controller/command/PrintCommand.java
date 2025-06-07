@@ -1,5 +1,11 @@
 package controller.command;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+
+import model.Event;
 import model.ICalendar;
 
 public class PrintCommand implements Command{
@@ -11,27 +17,60 @@ public class PrintCommand implements Command{
   }
   @Override
   public void execute(ICalendar model) {
-    String dateStringOnly, dateTimeStringStarting, dateTimeStringEnding;
 
-    // case 1: print events on <date>
-    if (command.contains("print events on ")
-            && !command.contains(" to ")) {
+      // case 1: print events on <date>
+      if (command.startsWith("print events on ") && !command.contains(" to ")) {
+        String dateStr = Command.getWordAfter("on", command);
+        if (dateStr.isEmpty()) {
+          throw new IllegalArgumentException("Malformed print command: \"" + command + "\"");
+        }
+        LocalDate date = LocalDate.parse(dateStr);
+        List<Event> events = model.getScheduleInRange(date, date);
+        for (Event ev : events) {
+          printEventLine(ev);
+        }
+        return;
+      }
 
-      dateStringOnly = Command.getWordAfter("on", command);
-      // …(parsing code, printing, etc.)…
-      return;
+      // case 2: print events from <dateTime> to <dateTime>
+      if (command.startsWith("print events from ") && command.contains(" to ")) {
+        String fromStr = Command.getWordAfter("from", command);
+        String toStr = Command.getWordAfter("to", command);
+        if (fromStr.isEmpty() || toStr.isEmpty()) {
+          throw new IllegalArgumentException("Malformed print command: \"" + command + "\"");
+        }
+        LocalDateTime fromDT = LocalDateTime.parse(fromStr);
+        LocalDateTime toDT = LocalDateTime.parse(toStr);
+        LocalDate startDate = fromDT.toLocalDate();
+        LocalDate endDate = toDT.toLocalDate();
+        List<Event> events = model.getScheduleInRange(startDate, endDate);
+        for (Event ev : events) {
+          printEventLine(ev);
+        }
+        return;
+      }
+
+      // otherwise malformed
+      throw new IllegalArgumentException("Malformed print command: \"" + command + "\"");
     }
 
-    // case 2: print events from <dt1> to <dt2>
-    else if (command.contains("print events from ")
-            && command.contains(" to ")) {
-
-      dateTimeStringStarting = Command.getWordAfter("from", command);
-      dateTimeStringEnding = Command.getWordAfter("to", command);
-      // …(parsing code, printing, etc.)…
-      return;
+  private void printEventLine(Event ev) {
+    StringBuilder line = new StringBuilder("• ");
+    line.append(ev.getSubject());
+    if (ev.isAllDayEvent()) {
+      line.append(" (All day)");
+    } else {
+      LocalTime st = ev.getStartTime();
+      LocalTime et = ev.getEndTime();
+      line.append(' ')
+              .append(String.format("%02d:%02d", st.getHour(), st.getMinute()))
+              .append('–')
+              .append(String.format("%02d:%02d", et.getHour(), et.getMinute()));
     }
-
-    throw new IllegalArgumentException("Malformed print command: \"" + command + "\"");
+    if (ev.getLocation() != null) {
+      line.append(" @ ").append(ev.getLocation());
+    }
+    System.out.println(line.toString());
   }
+
 }

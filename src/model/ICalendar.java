@@ -9,7 +9,13 @@ public interface ICalendar {
 
   void createEventSeries(List<Event> series);
 
-  void editEvent(Event event);
+  /**
+   * Replace a specific existing event with a new one.
+   * @param oldEvent  the event to look up (matched using equals())
+   * @param newEvent  the event to put in its place
+   */
+  void editEvent(Event oldEvent, Event newEvent);
+
 
   List<Event> getScheduleInRange(LocalDate start, LocalDate end);
 
