@@ -1,7 +1,10 @@
 package controller.command;
 
+import model.Event;
 import model.ICalendar;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -12,8 +15,17 @@ import static org.junit.Assert.*;
 public class PrintCommandTest {
 
   private final ICalendar dummyModel = new ICalendar() {
-    @Override public void createEvent() { }
-    @Override public void createEventSeries() { }
+
+    @Override
+    public void createEvent(Event event) {
+
+    }
+
+    @Override
+    public void createEventSeries(List<Event> series) {
+
+    }
+
     @Override public void editEvent(model.Event event) { }
     @Override public java.util.List<model.Event> getScheduleInRange(java.time.LocalDate start, java.time.LocalDate end) { return null; }
   };

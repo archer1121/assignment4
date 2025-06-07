@@ -1,5 +1,6 @@
 package controller.command;
 
+import model.Event;
 import model.ICalendar;
 import org.junit.After;
 import org.junit.Before;
@@ -10,6 +11,7 @@ import java.io.PrintStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -45,8 +47,16 @@ public class ShowCommandTest {
         // Return non-empty → “Busy”
         return Collections.singletonList((model.Event) null);
       }
-      @Override public void createEvent() {}
-      @Override public void createEventSeries() {}
+      @Override
+      public void createEvent(Event event) {
+
+      }
+
+      @Override
+      public void createEventSeries(List<Event> series) {
+
+      }
+
       @Override public void editEvent(model.Event event) {}
     };
 
@@ -67,8 +77,17 @@ public class ShowCommandTest {
         // Return empty → “Available”
         return Collections.emptyList();
       }
-      @Override public void createEvent() {}
-      @Override public void createEventSeries() {}
+
+      @Override
+      public void createEvent(Event event) {
+
+      }
+
+      @Override
+      public void createEventSeries(List<Event> series) {
+
+      }
+
       @Override public void editEvent(model.Event event) {}
     };
 
@@ -83,8 +102,17 @@ public class ShowCommandTest {
   public void testMalformedShowMissingStatus() {
     ICalendar fakeModel = new ICalendar() {
       @Override public java.util.List<model.Event> getScheduleInRange(LocalDate start, LocalDate end) { return null; }
-      @Override public void createEvent() {}
-      @Override public void createEventSeries() {}
+
+      @Override
+      public void createEvent(Event event) {
+
+      }
+
+      @Override
+      public void createEventSeries(List<Event> series) {
+
+      }
+
       @Override public void editEvent(model.Event event) {}
     };
 

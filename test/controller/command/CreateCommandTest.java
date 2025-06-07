@@ -1,7 +1,17 @@
 package controller.command;
 
+import model.Calendar;
+import model.Event;
 import model.ICalendar;
+import model.IEvent;
+
 import org.junit.Test;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * JUnit 4 tests for CreateCommand. Valid “create event …” strings should not throw;
@@ -10,8 +20,18 @@ import org.junit.Test;
 public class CreateCommandTest {
 
   private final ICalendar dummyModel = new ICalendar() {
-    @Override public void createEvent() { }
-    @Override public void createEventSeries() { }
+
+
+    @Override
+    public void createEvent(Event event) {
+
+    }
+
+    @Override
+    public void createEventSeries(List<Event> series) {
+
+    }
+
     @Override public void editEvent(model.Event event) { }
     @Override public java.util.List<model.Event> getScheduleInRange(java.time.LocalDate start, java.time.LocalDate end) { return null; }
   };
@@ -79,4 +99,41 @@ public class CreateCommandTest {
     String cmd = "create event Holiday 2025-12-25";
     new CreateCommand(cmd).execute(dummyModel);
   }
+  @Test
+  public void testEventBuilderValid() {
+    // Build an event from 2025-06-10T09:00 → 2025-06-10T10:00, subject “Meeting”
+    IEvent e = Event.getBuilder()
+            .subject("Meeting")
+            .startDate(10, 6, 2025)
+            .startTime(9, 0)
+            .endDate(10, 6, 2025)
+            .endTime(10, 0)
+            .buildEvent();
+
+    assertEquals("Meeting", e.getSubject());
+    assertEquals(LocalDate.of(2025, 6, 10), e.getStartDate());
+    assertEquals(LocalTime.of(9, 0), e.getStartTime());
+    assertEquals(LocalDate.of(2025, 6, 10), e.getEndDate());
+    assertEquals(LocalTime.of(10, 0), e.getEndTime());
+  }
+
+  @Test
+  public void testCreateEventAddsToList() {
+    ICalendar cal = new Calendar();
+    IEvent e = Event.getBuilder()
+            .subject("Lunch")
+            .startDate(15, 6, 2025)
+            .startTime(12, 0)
+            .endDate(15, 6, 2025)
+            .endTime(13, 0)
+            .buildEvent();
+
+    cal.createEvent((Event) e);
+    List<Event> all = cal.getScheduleInRange(LocalDate.of(2025, 6, 15),
+            LocalDate.of(2025, 6, 15));
+    assertEquals(1, all.size());
+    assertEquals(e, all.get(0));
+  }
+
+
 }
