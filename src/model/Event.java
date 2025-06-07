@@ -3,6 +3,7 @@ package model;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Comparator;
 
 
 /**
@@ -11,6 +12,13 @@ import java.time.LocalTime;
  */
 public class Event implements IEvent {
   private static final IDateTimeFacade facade = new DateTimeFacade();
+
+  public static class EventComparator implements Comparator<IEvent> {
+    @Override
+    public int compare(IEvent o1, IEvent o2) {
+      return o1.getStartDate().compareTo(o2.getStartDate());
+    }
+  }
 
   /**
    * A Builder class for constructing Events and making the construction process less error-prone.

@@ -83,7 +83,7 @@ public class EventSeriesTest {
             .weekDays("")
             .buildSeries();
     assertEquals("", s.getRecurringWeekDays());
-    assertEquals(List.of(), s.getSeries());
+    assertEquals(List.of(), s.getEvents());
   }
 
   @Test

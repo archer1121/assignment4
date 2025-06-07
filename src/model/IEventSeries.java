@@ -30,6 +30,13 @@ public interface IEventSeries {
    * Gets all the events listed in the series.
    * @return List of IEvents
    */
-  List<IEvent> getSeries();
+  List<IEvent> getEvents();
+
+  /**
+   * Returns a copy of this series with the givent list.
+   * @param newList the new List of events to represent
+   * @return a new EventSeries
+   */
+  EventSeries adopt(List<IEvent> newList);
 
 }

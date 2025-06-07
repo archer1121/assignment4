@@ -58,6 +58,38 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
     }
 
     /**
+     * Copies the properties of the provided event.
+     * @param event the event to be copied in.
+     * @return EventSeriesBuilder
+     */
+    public EventSeriesBuilder copyEvent(IEvent event) {
+      return new EventSeriesBuilder(
+              eventBuilder.subject(
+                      event.getSubject())
+                      .status(event.getStatus())
+                      .startTime(
+                              facade.hourOf(event.getStartTime()),
+                              facade.minuteOf(event.getStartTime())
+                      )
+                      .startDate(
+                              facade.dayOf(event.getStartDate()),
+                              facade.monthOf(event.getStartDate()),
+                              facade.YearOf(event.getStartDate())
+                      )
+                      .endTime(
+                              facade.hourOf(event.getEndTime()),
+                              facade.minuteOf(event.getEndTime())
+                      )
+                      .endDate(
+                              facade.dayOf(event.getEndDate()),
+                              facade.monthOf(event.getEndDate()),
+                              facade.YearOf(event.getEndDate())
+                      )
+                      .description(event.getDescription())
+              , weekDays, seriesEndDate, initialDate);
+    }
+
+    /**
      * Sets the event's subject.
      * @param subject the subject.
      * @return EventSeriesBuilder
@@ -221,6 +253,14 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
     this.eventSeries = constructSeries();
   }
 
+  private EventSeries(Event event, Set<DayOfWeek> weekDays, LocalDate endDate,
+                      List<IEvent> newList) {
+    this.baseEvent = event;
+    this.weekDays = weekDays;
+    this.endDate = endDate;
+    this.eventSeries = newList;
+  }
+
   // currently ignores adding base event to the list unless it falls on a valid weekday.
   // you can make an event on friday,but if the scheduled days are MW then it will only log those
   // days
@@ -263,6 +303,10 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
     return series;
   }
 
+  public EventSeries adopt(List<IEvent> newList) {
+    return new EventSeries(baseEvent, weekDays, endDate, newList);
+  }
+
   @Override
   public Iterator<IEvent> iterator() {
     return eventSeries.iterator();
@@ -274,7 +318,7 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
   }
 
   @Override
-  public List<IEvent> getSeries() {
+  public List<IEvent> getEvents() {
     return List.copyOf(eventSeries);
   }
 

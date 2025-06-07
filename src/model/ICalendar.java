@@ -5,19 +5,21 @@ import java.util.List;
 
 public interface ICalendar {
 
-  void createEvent(Event event);
+  void addEvent(IEvent event);
 
-  void createEventSeries(List<Event> series);
+  void removeEvent(IEvent event);
 
+  void addEventSeries(IEventSeries series);
   /**
    * Replace a specific existing event with a new one.
    * @param oldEvent  the event to look up (matched using equals())
    * @param newEvent  the event to put in its place
    */
-  void editEvent(Event oldEvent, Event newEvent);
+  void replaceEvent(IEvent oldEvent, IEvent newEvent);
 
+  List<IEvent> getEvents();
 
-  List<Event> getScheduleInRange(LocalDate start, LocalDate end);
+  List<IEvent> getScheduleInRange(LocalDate start, LocalDate end);
 
 
 
