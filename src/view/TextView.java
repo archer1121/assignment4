@@ -1,14 +1,21 @@
 package view;
 
-import java.io.PrintStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A Simple Implementation of the ITextView Interface which prints to
+ */
 public class TextView implements ITextView {
   private final List<String> textBuffer;
-  private final PrintStream out;
+  private final Appendable out;
 
-  public TextView(PrintStream out) {
+  /**
+   * Creates a new TextView object.
+   * @param out The output where messages will be printed.
+   */
+  public TextView(Appendable out) {
     this.textBuffer = new ArrayList<>();
     this.out = out;
   }
@@ -24,7 +31,14 @@ public class TextView implements ITextView {
   }
 
   @Override
-  public void displayTextInBuffer() {
-    out.println(textBuffer);
+  public void displayTextInBuffer() throws IOException {
+    for (String text : textBuffer) {
+      out.append(text).append("\n");
+    }
+  }
+
+  @Override
+  public List<String> getTextInBuffer() {
+    return List.copyOf(textBuffer);
   }
 }
