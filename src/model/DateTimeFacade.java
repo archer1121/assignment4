@@ -5,11 +5,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+/**
+ * An Implementation of IDateTimeFacade. All necessary Date/Time operations for this application
+ * are called through this class to reduce direct coupling with javas Date/Time classes.
+ */
 public class DateTimeFacade implements IDateTimeFacade {
-
-//  public model.DateFacadeImpl() {
-//
-//  }
 
   @Override
   public LocalDate dateOf(int day, int month, int year) {
@@ -139,7 +139,7 @@ public class DateTimeFacade implements IDateTimeFacade {
 
   @Override
   public boolean dateEquals(LocalDate date1, LocalDate date2) {
-    return date1.equals(date2);
+    return date1.isEqual(date2);
   }
 
   @Override

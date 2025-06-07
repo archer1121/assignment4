@@ -8,9 +8,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * A class which holds a series of events along with a few unique methods for more querying of
+ * the event series.
+ */
 public class EventSeries implements IEventSeries, Iterable<IEvent> {
   private static final IDateTimeFacade facade = new DateTimeFacade();
 
+  /**
+   * Builder class for constructing an event series.
+   */
   public static class EventSeriesBuilder {
     /*
     allowed mutability here as creating new objects when already modifying the event builder
@@ -40,21 +47,43 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
       this.initialDate = initialDate;
     }
 
+    /**
+     * Sets the event's description.
+     * @param description the description.
+     * @return EventSeriesBuilder
+     */
     public EventSeriesBuilder description(String description) {
       eventBuilder = eventBuilder.description(description);
       return this;
     }
 
+    /**
+     * Sets the event's subject.
+     * @param subject the subject.
+     * @return EventSeriesBuilder
+     */
     public EventSeriesBuilder subject(String subject) {
       eventBuilder = eventBuilder.subject(subject);
       return this;
     }
 
+    /**
+     * Sets the event's location.
+     * @param location the location.
+     * @return EventSeriesBuilder
+     */
     public EventSeriesBuilder location(EventLocation location) {
       eventBuilder = eventBuilder.location(location);
       return this;
     }
 
+    /**
+     * Sets the events start date.
+     * @param day The day.
+     * @param month The month.
+     * @param year The year.
+     * @return EventSeriesBuilder
+     */
     public EventSeriesBuilder eventStartDate(int day, int month, int year) {
 
       return new EventSeriesBuilder(
@@ -63,26 +92,55 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
       );
     }
 
+    /**
+     * Sets the event's start time.
+     * @param hour The hour.
+     * @param minute The minute.
+     * @return EventSeriesBuilder
+     */
     public EventSeriesBuilder eventStartTime(int hour, int minute) {
       eventBuilder = eventBuilder.startTime(hour, minute);
       return this;
     }
 
+    /**
+     * Sets the event's end time.
+     * @param hour The hour.
+     * @param minute The minute.
+     * @return EventSeriesBuilder
+     */
     public EventSeriesBuilder eventEndTime(int hour, int minute) {
       eventBuilder = eventBuilder.endTime(hour, minute);
       return this;
     }
 
+    /**
+     * Sets the event's end date.
+     * @param day The day.
+     * @param month The month.
+     * @param year The year.
+     * @return EventSeriesBuilder
+     */
     public EventSeriesBuilder eventEndDate(int day, int month, int year) {
       eventBuilder = eventBuilder.endDate(day, month, year);
       return this;
     }
 
+    /**
+     * Sets the event's status.
+     * @param status the status.
+     * @return EventSeriesBuilder
+     */
     public EventSeriesBuilder status(EventStatus status) {
       eventBuilder = eventBuilder.status(status);
       return this;
     }
 
+    /**
+     * Sets the event's week days.
+     * @param weekDays String containing the character literals representing week days.
+     * @return EventSeriesBuilder
+     */
     public EventSeriesBuilder weekDays(String weekDays) {
       Set<DayOfWeek> weekDaySet = new HashSet<>();
       for (char weekDay : weekDays.toCharArray()) {
@@ -93,18 +151,33 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
       return new EventSeriesBuilder(eventBuilder, weekDaySet, seriesEndDate, initialDate);
     }
 
+    /**
+     * Sets the date that the series will recur until. (inclusive)
+     * @param date the date.
+     * @return EventSeriesBuilder.
+     */
     public EventSeriesBuilder seriesEndDate(LocalDate date) {
       return new EventSeriesBuilder(eventBuilder, weekDays, date, initialDate);
     }
   // setting the number of weeks you want to recur for
+
+    /**
+     * Sets the amount of weeks that an event will recur for. (inclusive).....................?
+     * @param weeks The number of weeks.
+     * @return EventSeriesBuilder.
+     */
     public EventSeriesBuilder seriesEndDateFromWeeks(int weeks) {
       return new EventSeriesBuilder(
               eventBuilder, weekDays, facade.stepDays(initialDate, 7 * weeks), initialDate
       );
     }
 
+    /**
+     * Constructs an Event Series.
+     * @return EventSeries
+     */
     public EventSeries buildSeries() {
-      IEvent event = eventBuilder.buildEvent();
+      Event event = eventBuilder.buildEvent();
       if (!event.getStartDate().equals(event.getEndDate())) {
         throw new IllegalArgumentException(
                 "Cannot build event series with an event with different start and end dates"
@@ -114,24 +187,41 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
     }
   }
 
-  private final IEvent baseEvent;
+  private final Event baseEvent;
   private final Set<DayOfWeek> weekDays;
   private final LocalDate endDate;
 
   private final List<IEvent> eventSeries;
 
+  /**
+   * Gets a builder for an EventSeries.
+   * @return EventSeriesBuilder
+   */
   public static EventSeriesBuilder getBuilder() {
     return new EventSeriesBuilder();
   }
 
-  private EventSeries(IEvent event, Set<DayOfWeek> weekDays, LocalDate endDate) {
+  /**
+   * Takes an existing series and returns a builder which copies its properties.
+   * @param series the series to modify.
+   * @return EventSeriesBuilder
+   */
+  public static EventSeriesBuilder editSeries(EventSeries series) {
+    return new EventSeriesBuilder(
+      Event.editEvent(series.baseEvent),
+      series.weekDays,
+      series.endDate,
+      series.baseEvent.getStartDate());
+  }
+
+  private EventSeries(Event event, Set<DayOfWeek> weekDays, LocalDate endDate) {
     this.baseEvent = event;
     this.weekDays = weekDays;
     this.endDate = endDate;
     this.eventSeries = constructSeries();
   }
 
-  //currently ignores adding base event to the list unless it falls on a valid weekday.
+  // currently ignores adding base event to the list unless it falls on a valid weekday.
   // you can make an event on friday,but if the scheduled days are MW then it will only log those
   // days
   private List<IEvent> constructSeries() {
@@ -197,4 +287,5 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
   public LocalDate getSeriesEndDate() {
     return endDate;
   }
+
 }
