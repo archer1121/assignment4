@@ -1,314 +1,230 @@
 package controller.command;
 
-import model.Calendar;
-import model.Event;
-import model.ICalendar;
-import model.EventStatus;
-import model.EventLocation;
-import model.IEvent;
+import model.*;
+import view.ITextView;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 
-/**
- * Handles “create event …” commands by parsing them and then building and
- * storing Event objects via the ICalendar model.
- */
 public class CreateCommand implements Command {
-
-  private final String command;
+  private final String cmd;
 
   public CreateCommand(String command) {
-    this.command = command.trim();
+    this.cmd = command.trim();
   }
 
   @Override
-  public void execute(ICalendar model) {
-    // 1) Basic guard
-    if (!command.startsWith("create event ")) {
-      throw new IllegalArgumentException("Expected 'create event ...' but got: \"" + command + "\"");
+  public void execute(ICalendar model, ITextView view) {
+    if (!cmd.startsWith("create event ")) {
+      throw new IllegalArgumentException("Expected 'create event ...' but got: \"" + cmd + "\"");
     }
 
-    // ─── Case 1: “create event <subject> from <dt1> to <dt2>” (no repeats) ───
-    if (command.contains(" from ") &&
-            command.contains(" to ") &&
-            !command.contains(" repeats ") &&
-            !command.contains(" for ") &&
-            !command.contains(" until ")) {
+    // ─── Case 1: single timed event ───────────────────────────────────
+    if (cmd.contains(" from ")
+            && cmd.contains(" to ")
+            && !cmd.contains(" on ")
+            && !cmd.contains(" repeats ")) {
 
-      // a) Extract subject
-      String subject = Command.getWordAfter("event", command);
-      if (subject.isEmpty()) {
-        throw new IllegalArgumentException("Missing event subject");
-      }
+      String subject = Command.getWordAfter("event", cmd);
+      String fromS   = Command.getWordAfter("from",  cmd);
+      String toS     = Command.getWordAfter("to",    cmd);
 
-      // b) Extract start‐dateTime and parse
-      String startString = Command.getWordAfter("from", command);
-      if (startString.isEmpty()) {
-        throw new IllegalArgumentException("Missing start date‐time");
-      }
-      LocalDateTime startDT = LocalDateTime.parse(startString);
-      LocalDate startDate = startDT.toLocalDate();
-      LocalTime startTime = startDT.toLocalTime();
+      LocalDateTime fromDT = LocalDateTime.parse(fromS);
+      LocalDateTime toDT   = LocalDateTime.parse(toS);
 
-      // c) Extract end‐dateTime and parse
-      String endString = Command.getWordAfter("to", command);
-      if (endString.isEmpty()) {
-        throw new IllegalArgumentException("Missing end date‐time");
-      }
-      LocalDateTime endDT = LocalDateTime.parse(endString);
-      LocalDate endDate = endDT.toLocalDate();
-      LocalTime endTime = endDT.toLocalTime();
-
-      // d) Use the EventBuilder to create an Event
       IEvent e = Event.getBuilder()
               .subject(subject)
-              .startDate(startDate.getDayOfMonth(),
-                      startDate.getMonthValue(),
-                      startDate.getYear())
-              .startTime(startTime.getHour(), startTime.getMinute())
-              .endDate(endDate.getDayOfMonth(),
-                      endDate.getMonthValue(),
-                      endDate.getYear())
-              .endTime(endTime.getHour(), endTime.getMinute())
-              // .location(...)      // if you want to add location
-              // .status(EventStatus.CONFIRMED)  // example
-              // .description("Optional description")
+              .startDate(fromDT.getDayOfMonth(), fromDT.getMonthValue(), fromDT.getYear())
+              .startTime(fromDT.getHour(), fromDT.getMinute())
+              .endDate(toDT.getDayOfMonth(), toDT.getMonthValue(), toDT.getYear())
+              .endTime(toDT.getHour(), toDT.getMinute())
               .buildEvent();
 
-      // e) Finally, add it to the model
-      model.createEvent((Event) e);
-
+      model.addEvent(e);
       return;
     }
 
-    // ─── Case 2: “create event <subject> from <dt1> to <dt2> repeats <weekdays> for <N> times” ───
-    else if (command.contains(" from ")
-            && command.contains(" to ")
-            && command.contains(" repeats ")
-            && command.contains(" for ")
-            && command.contains(" times")) {
+    // ─── Case 2: timed series for N times ─────────────────────────────
+    if (cmd.contains(" from ")
+            && cmd.contains(" to ")
+            && cmd.contains(" repeats ")
+            && cmd.contains(" for ")
+            && cmd.contains(" times")) {
 
-      String subject = Command.getWordAfter("event", command);
-      String startString = Command.getWordAfter("from", command);
-      String endString   = Command.getWordAfter("to", command);
-      String weekdays    = Command.getWordAfter("repeats", command);
-      String countStr    = Command.getWordAfter("for", command);
+      String subject  = Command.getWordAfter("event",   cmd);
+      String fromS    = Command.getWordAfter("from",    cmd);
+      String toS      = Command.getWordAfter("to",      cmd);
+      String days     = Command.getWordAfter("repeats", cmd);
+      String countS   = Command.getWordAfter("for",     cmd);
 
-      // parse count
       int count;
       try {
-        count = Integer.parseInt(countStr);
+        count = Integer.parseInt(countS);
       } catch (NumberFormatException ex) {
-        throw new IllegalArgumentException("Invalid repeat‐count: " + countStr);
+        throw new IllegalArgumentException("Invalid repeat count: " + countS);
       }
 
-      // parse datetimes
-      LocalDateTime startDT = LocalDateTime.parse(startString);
-      LocalDate startDate = startDT.toLocalDate();
-      LocalTime startTime = startDT.toLocalTime();
+      LocalDateTime fromDT = LocalDateTime.parse(fromS);
+      LocalTime     startT = fromDT.toLocalTime();
+      LocalTime     endT   = LocalDateTime.parse(toS).toLocalTime();
+      LocalDate     cursor = fromDT.toLocalDate();
 
-      LocalDateTime endDT = LocalDateTime.parse(endString);
-      LocalDate endDate = endDT.toLocalDate();
-      LocalTime endTime = endDT.toLocalTime();
-
-      // build N events according to the weekday string (e.g. "MWF")
-      // Here’s a quick example for a weekly series:
-      List<Event> series = new ArrayList<>();
-      LocalDate currentDate = startDate;
       int created = 0;
       while (created < count) {
-        char dayCode = currentDate.getDayOfWeek().toString().charAt(0);
-        // Simplified: check if dayCode matches any char in `weekdays`
-        if (weekdays.indexOf(dayCode) >= 0) {
+        DayOfWeek dow = cursor.getDayOfWeek();
+        if (days.indexOf(firstCharOf(dow)) >= 0) {
           IEvent e = Event.getBuilder()
                   .subject(subject)
-                  .startDate(currentDate.getDayOfMonth(),
-                          currentDate.getMonthValue(),
-                          currentDate.getYear())
-                  .startTime(startTime.getHour(), startTime.getMinute())
-                  .endDate(currentDate.getDayOfMonth(),
-                          currentDate.getMonthValue(),
-                          currentDate.getYear())
-                  .endTime(endTime.getHour(), endTime.getMinute())
+                  .startDate(cursor.getDayOfMonth(), cursor.getMonthValue(), cursor.getYear())
+                  .startTime(startT.getHour(), startT.getMinute())
+                  .endDate(cursor.getDayOfMonth(), cursor.getMonthValue(), cursor.getYear())
+                  .endTime(endT.getHour(), endT.getMinute())
                   .buildEvent();
-          series.add((Event) e);
+          model.addEvent(e);
           created++;
         }
-        currentDate = currentDate.plusDays(1);
+        cursor = cursor.plusDays(1);
       }
-
-      // store the entire list at once
-      model.createEventSeries(series);
       return;
     }
 
-    // ─── Case 3: “create event <subject> from <dt1> to <dt2> repeats <weekdays> until <date>” ───
-    else if (command.contains(" from ")
-            && command.contains(" to ")
-            && command.contains(" repeats ")
-            && command.contains(" until ")) {
+    // ─── Case 3: timed series until <date> ────────────────────────────
+    if (cmd.contains(" from ")
+            && cmd.contains(" to ")
+            && cmd.contains(" repeats ")
+            && cmd.contains(" until ")) {
 
-      String subject    = Command.getWordAfter("event", command);
-      String startString= Command.getWordAfter("from", command);
-      String endString  = Command.getWordAfter("to", command);
-      String weekdays   = Command.getWordAfter("repeats", command);
-      String untilDateS = Command.getWordAfter("until", command);
+      String subject  = Command.getWordAfter("event",   cmd);
+      String fromS    = Command.getWordAfter("from",    cmd);
+      String toS      = Command.getWordAfter("to",      cmd);
+      String days     = Command.getWordAfter("repeats", cmd);
+      String untilS   = Command.getWordAfter("until",   cmd);
 
-      // parse the “until” LocalDate (no time)
-      LocalDate untilDate = LocalDate.parse(untilDateS);
+      LocalDateTime fromDT = LocalDateTime.parse(fromS);
+      LocalTime     startT = fromDT.toLocalTime();
+      LocalTime     endT   = LocalDateTime.parse(toS).toLocalTime();
+      LocalDate     cursor = fromDT.toLocalDate();
+      LocalDate     endDate= LocalDate.parse(untilS);
 
-      // parse start and end LocalDateTime
-      LocalDateTime startDT = LocalDateTime.parse(startString);
-      LocalDate startDate = startDT.toLocalDate();
-      LocalTime startTime = startDT.toLocalTime();
-
-      LocalDateTime endDT = LocalDateTime.parse(endString);
-      LocalDate endDate = endDT.toLocalDate();
-      LocalTime endTime = endDT.toLocalTime();
-
-      // generate series until `untilDate` (inclusive)
-      List<Event> series = new ArrayList<>();
-      LocalDate currentDate = startDate;
-      while (!currentDate.isAfter(untilDate)) {
-        char dayCode = currentDate.getDayOfWeek().toString().charAt(0);
-        if (weekdays.indexOf(dayCode) >= 0) {
+      while (!cursor.isAfter(endDate)) {
+        DayOfWeek dow = cursor.getDayOfWeek();
+        if (days.indexOf(firstCharOf(dow)) >= 0) {
           IEvent e = Event.getBuilder()
                   .subject(subject)
-                  .startDate(currentDate.getDayOfMonth(),
-                          currentDate.getMonthValue(),
-                          currentDate.getYear())
-                  .startTime(startTime.getHour(), startTime.getMinute())
-                  .endDate(currentDate.getDayOfMonth(),
-                          currentDate.getMonthValue(),
-                          currentDate.getYear())
-                  .endTime(endTime.getHour(), endTime.getMinute())
+                  .startDate(cursor.getDayOfMonth(), cursor.getMonthValue(), cursor.getYear())
+                  .startTime(startT.getHour(), startT.getMinute())
+                  .endDate(cursor.getDayOfMonth(), cursor.getMonthValue(), cursor.getYear())
+                  .endTime(endT.getHour(), endT.getMinute())
                   .buildEvent();
-          series.add((Event) e);
+          model.addEvent(e);
         }
-        currentDate = currentDate.plusDays(1);
+        cursor = cursor.plusDays(1);
       }
-
-      model.createEventSeries(series);
       return;
     }
 
-    // ─── Case 4: “create event <subject> on <date>” ───
-    else if (command.contains(" on ")
-            && !command.contains(" repeats ")
-            && !command.contains(" for ")
-            && !command.contains(" until ")) {
+    // ─── Case 4: single all‐day event ────────────────────────────────
+    if (cmd.contains(" on ")
+            && !cmd.contains(" repeats ")) {
 
-      String subject   = Command.getWordAfter("event", command);
-      String dateOnly  = Command.getWordAfter("on", command);
-      LocalDate d      = LocalDate.parse(dateOnly);
+      String subject = Command.getWordAfter("event", cmd);
+      String onS     = Command.getWordAfter("on",    cmd);
+      LocalDate d    = LocalDate.parse(onS);
 
-      // Build an “all‐day” event: startTime=08:00, endTime=17:00
       IEvent e = Event.getBuilder()
               .subject(subject)
               .startDate(d.getDayOfMonth(), d.getMonthValue(), d.getYear())
-              .startTime(8, 0)
+              .startTime(8,  0)
               .endDate(d.getDayOfMonth(), d.getMonthValue(), d.getYear())
               .endTime(17, 0)
               .buildEvent();
 
-      model.createEvent((Event) e);
+      model.addEvent(e);
       return;
     }
 
-    // ─── Case 5: “create event <subject> on <date> repeats <weekdays> for <N> times” ───
-    else if (command.contains(" on ")
-            && command.contains(" repeats ")
-            && command.contains(" for ")
-            && command.contains(" times")) {
+    // ─── Case 5: all‐day series for N times ───────────────────────────
+    if (cmd.contains(" on ")
+            && cmd.contains(" repeats ")
+            && cmd.contains(" for ")
+            && cmd.contains(" times")) {
 
-      String subject   = Command.getWordAfter("event", command);
-      String dateOnly  = Command.getWordAfter("on", command);
-      String weekdays  = Command.getWordAfter("repeats", command);
-      String countStr  = Command.getWordAfter("for", command);
+      String subject = Command.getWordAfter("event",   cmd);
+      String onS     = Command.getWordAfter("on",      cmd);
+      String days    = Command.getWordAfter("repeats", cmd);
+      String countS  = Command.getWordAfter("for",     cmd);
 
       int count;
       try {
-        count = Integer.parseInt(countStr);
+        count = Integer.parseInt(countS);
       } catch (NumberFormatException ex) {
-        throw new IllegalArgumentException("Invalid repeat count: " + countStr);
+        throw new IllegalArgumentException("Invalid repeat count: " + countS);
       }
 
-      LocalDate startDate = LocalDate.parse(dateOnly);
-      LocalTime startTime = LocalTime.of(8, 0);
-      LocalTime endTime   = LocalTime.of(17, 0);
-
-      List<Event> series = new ArrayList<>();
-      LocalDate currentDate = startDate;
+      LocalDate cursor = LocalDate.parse(onS);
       int created = 0;
       while (created < count) {
-        char dayCode = currentDate.getDayOfWeek().toString().charAt(0);
-        if (weekdays.indexOf(dayCode) >= 0) {
+        DayOfWeek dow = cursor.getDayOfWeek();
+        if (days.indexOf(firstCharOf(dow)) >= 0) {
           IEvent e = Event.getBuilder()
                   .subject(subject)
-                  .startDate(currentDate.getDayOfMonth(),
-                          currentDate.getMonthValue(),
-                          currentDate.getYear())
-                  .startTime(startTime.getHour(), startTime.getMinute())
-                  .endDate(currentDate.getDayOfMonth(),
-                          currentDate.getMonthValue(),
-                          currentDate.getYear())
-                  .endTime(endTime.getHour(), endTime.getMinute())
+                  .startDate(cursor.getDayOfMonth(), cursor.getMonthValue(), cursor.getYear())
+                  .startTime(8,  0)
+                  .endDate(cursor.getDayOfMonth(), cursor.getMonthValue(), cursor.getYear())
+                  .endTime(17, 0)
                   .buildEvent();
-          series.add((Event) e);
+          model.addEvent(e);
           created++;
         }
-        currentDate = currentDate.plusDays(1);
+        cursor = cursor.plusDays(1);
       }
-
-      model.createEventSeries(series);
       return;
     }
 
-    // ─── Case 6: “create event <subject> on <date> repeats <weekdays> until <date>” ───
-    else if (command.contains(" on ")
-            && command.contains(" repeats ")
-            && command.contains(" until ")) {
+    // ─── Case 6: all‐day series until <date> ──────────────────────────
+    if (cmd.contains(" on ")
+            && cmd.contains(" repeats ")
+            && cmd.contains(" until ")) {
 
-      String subject   = Command.getWordAfter("event", command);
-      String dateOnly  = Command.getWordAfter("on", command);
-      String weekdays  = Command.getWordAfter("repeats", command);
-      String untilDateS = Command.getWordAfter("until", command);
+      String subject = Command.getWordAfter("event",   cmd);
+      String onS     = Command.getWordAfter("on",      cmd);
+      String days    = Command.getWordAfter("repeats", cmd);
+      String untilS  = Command.getWordAfter("until",   cmd);
 
-      LocalDate startDate = LocalDate.parse(dateOnly);
-      LocalDate untilDate = LocalDate.parse(untilDateS);
-      LocalTime startTime = LocalTime.of(8, 0);
-      LocalTime endTime   = LocalTime.of(17, 0);
-
-      List<Event> series = new ArrayList<>();
-      LocalDate currentDate = startDate;
-      while (!currentDate.isAfter(untilDate)) {
-        char dayCode = currentDate.getDayOfWeek().toString().charAt(0);
-        if (weekdays.indexOf(dayCode) >= 0) {
+      LocalDate cursor = LocalDate.parse(onS);
+      LocalDate end    = LocalDate.parse(untilS);
+      while (!cursor.isAfter(end)) {
+        DayOfWeek dow = cursor.getDayOfWeek();
+        if (days.indexOf(firstCharOf(dow)) >= 0) {
           IEvent e = Event.getBuilder()
                   .subject(subject)
-                  .startDate(currentDate.getDayOfMonth(),
-                          currentDate.getMonthValue(),
-                          currentDate.getYear())
-                  .startTime(startTime.getHour(), startTime.getMinute())
-                  .endDate(currentDate.getDayOfMonth(),
-                          currentDate.getMonthValue(),
-                          currentDate.getYear())
-                  .endTime(endTime.getHour(), endTime.getMinute())
+                  .startDate(cursor.getDayOfMonth(), cursor.getMonthValue(), cursor.getYear())
+                  .startTime(8,  0)
+                  .endDate(cursor.getDayOfMonth(), cursor.getMonthValue(), cursor.getYear())
+                  .endTime(17, 0)
                   .buildEvent();
-          series.add((Event) e);
+          model.addEvent(e);
         }
-        currentDate = currentDate.plusDays(1);
+        cursor = cursor.plusDays(1);
       }
-
-      model.createEventSeries(series);
       return;
     }
 
-    // If none of the patterns matched, it’s malformed:
-    throw new IllegalArgumentException("Malformed create command: \"" + command + "\"");
+    throw new IllegalArgumentException("Malformed create command: \"" + cmd + "\"");
+  }
+
+  private static char firstCharOf(DayOfWeek d) {
+    switch (d) {
+      case MONDAY:    return 'M';
+      case TUESDAY:   return 'T';
+      case WEDNESDAY: return 'W';
+      case THURSDAY:  return 'R';
+      case FRIDAY:    return 'F';
+      case SATURDAY:  return 'S';
+      case SUNDAY:    return 'U';
+      default:        throw new IllegalArgumentException();
+    }
   }
 }

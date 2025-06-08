@@ -1,0 +1,8 @@
+create event Meeting from 2025-06-10T09:00            # missing “to …”
+create evnt Holiday on 2025-12-25                      # typo in “event”
+print events on                                       # missing date
+print events from 2025-06-01T08:00                     # missing “to …”
+print events from 2025-06-01T08:00 to                  # missing end datetime
+edit event subject Lunch from 2025-06-15T12:00 to 2025-06-15T13:00   # missing “with …”
+show status 2025-06-10T09:00                          # missing “on”
+create event Yoga on 2025-06-11 repeats for 3 times    # missing weekdays

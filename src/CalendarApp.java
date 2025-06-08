@@ -10,7 +10,7 @@ import model.Calendar;
 public class CalendarApp {
 
   //READ: PLS DO javac *.java first before running
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     String usage = "Usage: java CalendarApp --mode <interactive|headless> [commandsFile]";
 
     // 1. Make sure we have at least two tokens: "--mode" and its value
@@ -33,8 +33,7 @@ public class CalendarApp {
     if (modeValue.equals("interactive")) { //-------------------------------------------------------
 
       System.out.println("interactive mode bruh"); // run it here
-      new CalendarController(new InputStreamReader(System.in), System.out)
-              .go(new Calendar());
+      new CalendarController(new Calendar(), new InputStreamReader(System.in), System.out).go();
 
     }
     else if (modeValue.equals("headless")) { // need to intake a command file ----------------------
@@ -49,8 +48,8 @@ public class CalendarApp {
 
       try (BufferedReader reader = new BufferedReader(new FileReader(commandsFile))) {
 
-        new CalendarController(reader, System.out)
-                .go(new Calendar());
+        new CalendarController(new Calendar(), reader, System.out)
+                .go();
 
       } catch (FileNotFoundException e) {
         System.err.println("File not found: " + commandsFile);
