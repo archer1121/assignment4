@@ -4,17 +4,27 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
-// class is scrappy but it works for the most part
+/**
+ * An editor for the EventSeries. Supports 3 variant replace() operations.
+ */
 public class SeriesEditor {
   private static final IDateTimeFacade facade = new DateTimeFacade();
   private EventSeries series;
 
+  /**
+   * Constructs a new SeriesEditor.
+   * @param eventSeries The Series to be manipulated.
+   */
   public SeriesEditor(EventSeries eventSeries) {
     this.series = eventSeries;
   }
 
-
+  /**
+   * Replaces oldEvent with newEvent if possible.
+   * @param oldEvent The Event to be replaced.
+   * @param newEvent The replacement for oldEvent.
+   * @return SeriesEditor
+   */
   public SeriesEditor replace(IEvent oldEvent, IEvent newEvent) {
     List<IEvent> newlist = new ArrayList<>(series.getEvents());
     for (int i = 0; i < newlist.size(); i++) {
@@ -27,11 +37,20 @@ public class SeriesEditor {
     return this;
   }
 
+  /**
+   * Returns the series that this Editor is operating on.
+   * @return EventSeries
+   */
   public EventSeries getSeries() {
     return this.series;
   }
 
-  // inclusive of the starts and ends
+  /**
+   * Replaces all events following (and including) oldEvent with newEvent.
+   * @param oldEvent The event denoting when replacement should start.
+   * @param newEvent The event which is the replacement.
+   * @return seriesEditor
+   */
   public SeriesEditor replaceRange(IEvent oldEvent, IEvent newEvent) {
     List<IEvent> beforeActivation = new ArrayList<>();
     List<IEvent> afterActivation = new ArrayList<>();
@@ -54,6 +73,11 @@ public class SeriesEditor {
     return this;
   }
 
+  /**
+   * Replaces all Events in the series with the newEvent.
+   * @param newEvent The replacement event.
+   * @return SeriesEditor
+   */
   public SeriesEditor replaceAll(IEvent newEvent) {
     series = series.adopt(
             EventSeries.editSeries(series).copyEvent(newEvent).buildSeries().getEvents()
@@ -61,11 +85,24 @@ public class SeriesEditor {
     return this;
   }
 
+  /**
+   * Finds the first Event in this series with the specified dates.
+   * @param day The day.
+   * @param month The month.
+   * @param year The year.
+   * @return The IEvent found, or null if none.
+   */
   public IEvent find(int day, int month, int year) {
     return find(facade.dateOf(day, month, year));
   }
 
-  // finds an event with this date as its start date
+  /
+
+  /**
+   * Finds the first Event in this series with the specified dates.
+   * @param date the start date of the Event to be found.
+   * @return The IEvent found, or null if none.
+   */
   public IEvent find(LocalDate date) {
     List<IEvent> list = series.getEvents();
     for (IEvent iEvent : list) {

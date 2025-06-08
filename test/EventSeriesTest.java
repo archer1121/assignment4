@@ -12,6 +12,9 @@ import model.IEvent;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
+/**
+ * Class containing tests for the various methods in the EventSeries Class.
+ */
 public class EventSeriesTest {
   private static final IDateTimeFacade facade = new DateTimeFacade();
   EventSeries.EventSeriesBuilder seriesBuilder;

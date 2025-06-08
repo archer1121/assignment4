@@ -16,6 +16,9 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+/**
+ * Class containing tests for the various methods in the Event class.
+ */
 public class EventTest {
   private  Event.EventBuilder builder;
   private static final IDateTimeFacade facade = new DateTimeFacade();
