@@ -38,11 +38,11 @@ public class DateTimeFacade implements IDateTimeFacade {
 
   @Override
   public String weeksAsString(List<DayOfWeek> weekDays) {
-      StringBuilder sb = new StringBuilder();
-      for (DayOfWeek d : weekDays) {
-        sb.append(weekDaySymbolOf(d));
-      }
-      return sb.toString();
+    StringBuilder sb = new StringBuilder();
+    for (DayOfWeek d : weekDays) {
+      sb.append(weekDaySymbolOf(d));
+    }
+    return sb.toString();
   }
 
   @Override
@@ -93,23 +93,23 @@ public class DateTimeFacade implements IDateTimeFacade {
 
   @Override
   public DayOfWeek weekDayFrom(char literal) {
-      switch (literal) {
-        case 'M':
-          return DayOfWeek.MONDAY;
-        case 'T':
-          return DayOfWeek.TUESDAY;
-        case 'W':
-          return DayOfWeek.WEDNESDAY;
-        case 'R':
-          return DayOfWeek.THURSDAY;
-        case 'F':
-          return DayOfWeek.FRIDAY;
-        case 'S':
-          return DayOfWeek.SATURDAY;
-        case 'U':
-          return DayOfWeek.SUNDAY;
-      }
-      return null;
+    switch (literal) {
+      case 'M':
+        return DayOfWeek.MONDAY;
+      case 'T':
+        return DayOfWeek.TUESDAY;
+      case 'W':
+        return DayOfWeek.WEDNESDAY;
+      case 'R':
+        return DayOfWeek.THURSDAY;
+      case 'F':
+        return DayOfWeek.FRIDAY;
+      case 'S':
+        return DayOfWeek.SATURDAY;
+      case 'U':
+        return DayOfWeek.SUNDAY;
+    }
+    return null;
   }
 
   @Override
@@ -146,26 +146,32 @@ public class DateTimeFacade implements IDateTimeFacade {
   public DayOfWeek sunday() {
     return DayOfWeek.SUNDAY;
   }
+
   @Override
   public DayOfWeek monday() {
     return DayOfWeek.MONDAY;
   }
+
   @Override
   public DayOfWeek tuesday() {
     return DayOfWeek.TUESDAY;
   }
+
   @Override
   public DayOfWeek wednesday() {
     return DayOfWeek.WEDNESDAY;
   }
+
   @Override
   public DayOfWeek thursday() {
     return DayOfWeek.THURSDAY;
   }
+
   @Override
   public DayOfWeek friday() {
     return DayOfWeek.FRIDAY;
   }
+
   @Override
   public DayOfWeek saturday() {
     return DayOfWeek.SATURDAY;

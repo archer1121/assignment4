@@ -13,6 +13,7 @@ public class TextView implements ITextView {
 
   /**
    * Creates a new TextView object.
+   *
    * @param out The output where messages will be printed.
    */
   public TextView(Appendable out) {

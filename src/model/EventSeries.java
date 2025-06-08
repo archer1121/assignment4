@@ -49,6 +49,7 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
 
     /**
      * Sets the event's description.
+     *
      * @param description the description.
      * @return EventSeriesBuilder
      */
@@ -64,28 +65,28 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
      */
     public EventSeriesBuilder copyEvent(IEvent event) {
       return new EventSeriesBuilder(
-              eventBuilder.subject(
-                      event.getSubject())
-                      .status(event.getStatus())
-                      .startTime(
-                              facade.hourOf(event.getStartTime()),
-                              facade.minuteOf(event.getStartTime())
-                      )
-                      .startDate(
-                              facade.dayOf(event.getStartDate()),
-                              facade.monthOf(event.getStartDate()),
-                              facade.YearOf(event.getStartDate())
-                      )
-                      .endTime(
-                              facade.hourOf(event.getEndTime()),
-                              facade.minuteOf(event.getEndTime())
-                      )
-                      .endDate(
-                              facade.dayOf(event.getEndDate()),
-                              facade.monthOf(event.getEndDate()),
-                              facade.YearOf(event.getEndDate())
-                      )
-                      .description(event.getDescription())
+        eventBuilder.subject(
+          event.getSubject())
+          .status(event.getStatus())
+          .startTime(
+            facade.hourOf(event.getStartTime()),
+            facade.minuteOf(event.getStartTime())
+          )
+          .startDate(
+            facade.dayOf(event.getStartDate()),
+            facade.monthOf(event.getStartDate()),
+            facade.YearOf(event.getStartDate())
+          )
+          .endTime(
+            facade.hourOf(event.getEndTime()),
+            facade.minuteOf(event.getEndTime())
+          )
+          .endDate(
+            facade.dayOf(event.getEndDate()),
+            facade.monthOf(event.getEndDate()),
+            facade.YearOf(event.getEndDate())
+          )
+          .description(event.getDescription())
               , weekDays, seriesEndDate, initialDate);
     }
 
@@ -111,9 +112,10 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
 
     /**
      * Sets the events start date.
-     * @param day The day.
+     *
+     * @param day   The day.
      * @param month The month.
-     * @param year The year.
+     * @param year  The year.
      * @return EventSeriesBuilder
      */
     public EventSeriesBuilder eventStartDate(int day, int month, int year) {
@@ -126,7 +128,7 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
 
     /**
      * Sets the event's start time.
-     * @param hour The hour.
+     * @param hour   The hour.
      * @param minute The minute.
      * @return EventSeriesBuilder
      */
@@ -137,7 +139,8 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
 
     /**
      * Sets the event's end time.
-     * @param hour The hour.
+     *
+     * @param hour   The hour.
      * @param minute The minute.
      * @return EventSeriesBuilder
      */
@@ -148,9 +151,10 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
 
     /**
      * Sets the event's end date.
-     * @param day The day.
+     *
+     * @param day   The day.
      * @param month The month.
-     * @param year The year.
+     * @param year  The year.
      * @return EventSeriesBuilder
      */
     public EventSeriesBuilder eventEndDate(int day, int month, int year) {
@@ -160,6 +164,7 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
 
     /**
      * Sets the event's status.
+     *
      * @param status the status.
      * @return EventSeriesBuilder
      */
@@ -170,6 +175,7 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
 
     /**
      * Sets the event's week days.
+     *
      * @param weekDays String containing the character literals representing week days.
      * @return EventSeriesBuilder
      */
@@ -191,10 +197,9 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
     public EventSeriesBuilder seriesEndDate(LocalDate date) {
       return new EventSeriesBuilder(eventBuilder, weekDays, date, initialDate);
     }
-  // setting the number of weeks you want to recur for
 
     /**
-     * Sets the amount of weeks that an event will recur for. (inclusive).....................?
+     * Sets the amount of weeks that an event will recur for.
      * @param weeks The number of weeks.
      * @return EventSeriesBuilder.
      */
@@ -240,10 +245,10 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
    */
   public static EventSeriesBuilder editSeries(EventSeries series) {
     return new EventSeriesBuilder(
-      Event.editEvent(series.baseEvent),
-      series.weekDays,
-      series.endDate,
-      series.baseEvent.getStartDate());
+            Event.editEvent(series.baseEvent),
+            series.weekDays,
+            series.endDate,
+            series.baseEvent.getStartDate());
   }
 
   private EventSeries(Event event, Set<DayOfWeek> weekDays, LocalDate endDate) {
@@ -268,7 +273,7 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
     List<IEvent> series = new ArrayList<>();
     LocalDate currentDate = baseEvent.getStartDate();
     // inclusive stepping
-    while (facade.isAfter(facade.stepDays(endDate , 1),  currentDate)) {
+    while (facade.isAfter(facade.stepDays(endDate, 1), currentDate)) {
 
       if (weekDays.contains(facade.weekDayOf(currentDate))) {
         //eventSeries.add(baseEvent);
@@ -330,6 +335,16 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
   @Override
   public LocalDate getSeriesEndDate() {
     return endDate;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o instanceof EventSeries) {
+      EventSeries other = (EventSeries) o;
+      return this.eventSeries.equals(other.eventSeries);
+    }
+    return false;
   }
 
 }

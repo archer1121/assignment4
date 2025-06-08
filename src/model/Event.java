@@ -3,7 +3,6 @@ package model;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Comparator;
 
 
 /**
@@ -12,13 +11,6 @@ import java.util.Comparator;
  */
 public class Event implements IEvent {
   private static final IDateTimeFacade facade = new DateTimeFacade();
-
-  public static class EventComparator implements Comparator<IEvent> {
-    @Override
-    public int compare(IEvent o1, IEvent o2) {
-      return o1.getStartDate().compareTo(o2.getStartDate());
-    }
-  }
 
   /**
    * A Builder class for constructing Events and making the construction process less error-prone.
@@ -65,6 +57,7 @@ public class Event implements IEvent {
 
     /**
      * Sets the event's description.
+     *
      * @param description the description.
      * @return EventBuilder
      */
@@ -77,8 +70,10 @@ public class Event implements IEvent {
               this.status
       );
     }
+
     /**
      * Sets the event's subject.
+     *
      * @param subject the subject.
      * @return EventBuilder
      */
@@ -90,8 +85,10 @@ public class Event implements IEvent {
               this.status
       );
     }
+
     /**
      * Sets the event's location.
+     *
      * @param location the location.
      * @return EventBuilder
      */
@@ -103,11 +100,13 @@ public class Event implements IEvent {
               this.status
       );
     }
+
     /**
      * Sets the events start date.
-     * @param day The day.
+     *
+     * @param day   The day.
      * @param month The month.
-     * @param year The year.
+     * @param year  The year.
      * @return EventBuilder
      */
     public EventBuilder startDate(int day, int month, int year) {
@@ -125,9 +124,11 @@ public class Event implements IEvent {
       }
 
     }
+
     /**
      * Sets the event's start time.
-     * @param hour The hour.
+     *
+     * @param hour   The hour.
      * @param minute The minute.
      * @return EventBuilder
      */
@@ -145,9 +146,11 @@ public class Event implements IEvent {
       }
 
     }
+
     /**
      * Sets the event's end time.
-     * @param hour The hour.
+     *
+     * @param hour   The hour.
      * @param minute The minute.
      * @return EventBuilder
      */
@@ -165,11 +168,13 @@ public class Event implements IEvent {
       }
 
     }
+
     /**
      * Sets the event's end date.
-     * @param day The day.
+     *
+     * @param day   The day.
      * @param month The month.
-     * @param year The year.
+     * @param year  The year.
      * @return EventBuilder
      */
     public EventBuilder endDate(int day, int month, int year) {
@@ -187,8 +192,10 @@ public class Event implements IEvent {
       }
 
     }
+
     /**
      * Sets the event's status.
+     *
      * @param status the status.
      * @return EventBuilder
      */
@@ -203,6 +210,7 @@ public class Event implements IEvent {
 
     /**
      * Constructs a new Event.
+     *
      * @return Event
      */
     public Event buildEvent() {
@@ -272,6 +280,7 @@ public class Event implements IEvent {
 
   /**
    * Gets a new EventBuilder for safer construction of an event.
+   *
    * @return EventBuilder
    */
   public static EventBuilder getBuilder() {
@@ -280,6 +289,7 @@ public class Event implements IEvent {
 
   /**
    * Gets an EventBuilder which copies over the properties held by the given event.
+   *
    * @param event the event to be edited.
    * @return A new EventBuilder with fields set to those held by the given event.
    */
@@ -292,6 +302,7 @@ public class Event implements IEvent {
     );
   }
 
+  @Override
   public String getSubject() {
     return subject;
   }

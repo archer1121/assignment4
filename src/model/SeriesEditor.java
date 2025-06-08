@@ -30,6 +30,7 @@ public class SeriesEditor {
   public EventSeries getSeries() {
     return this.series;
   }
+
   // inclusive of the starts and ends
   public SeriesEditor replaceRange(IEvent oldEvent, IEvent newEvent) {
     List<IEvent> beforeActivation = new ArrayList<>();
@@ -39,9 +40,9 @@ public class SeriesEditor {
       if (series.getEvents().get(i).equals(oldEvent)) {
         afterActivation.addAll(
                 EventSeries.editSeries(series)
-                .copyEvent(newEvent)
-                .buildSeries()
-                .getEvents().subList(i, series.getEvents().size())
+                        .copyEvent(newEvent)
+                        .buildSeries()
+                        .getEvents().subList(i, series.getEvents().size())
         );
         activated = true;
       } else if (!activated) {
@@ -60,9 +61,10 @@ public class SeriesEditor {
     return this;
   }
 
-  public IEvent find(int day, int  month, int year) {
+  public IEvent find(int day, int month, int year) {
     return find(facade.dateOf(day, month, year));
   }
+
   // finds an event with this date as its start date
   public IEvent find(LocalDate date) {
     List<IEvent> list = series.getEvents();
@@ -73,7 +75,6 @@ public class SeriesEditor {
     }
     return null;
   }
-
 
 
 }

@@ -7,6 +7,7 @@ import java.util.List;
  * A simple TextView Interface which allows printing messages to a text output.
  */
 public interface ITextView {
+
   /**
    * Takes and stores a message.
    *
@@ -26,6 +27,7 @@ public interface ITextView {
 
   /**
    * Returns the text currently stored in this View
+   *
    * @return List of all stored messages.
    */
   List<String> getTextInBuffer();
