@@ -54,4 +54,7 @@ public interface ICalendar {
   List<IEvent> getScheduleInRange(LocalDate start, LocalDate end);
 
 
+  IEventSeries getSeriesFor(IEvent event);
+
+  void replaceSeries(IEventSeries oldSeries, IEventSeries newSeries);
 }

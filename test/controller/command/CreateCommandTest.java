@@ -1,112 +1,125 @@
+// src/test/java/controller/command/CreateCommandTest.java
 package controller.command;
 
-import model.Calendar;
-import model.Event;
-import model.ICalendar;
-import model.IEvent;
-
+import model.*;
+import view.ITextView;
 import org.junit.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
-/**
- * JUnit 4 tests for CreateCommand. Valid “create event …” strings should not throw;
- * malformed strings should throw IllegalArgumentException.
- */
 public class CreateCommandTest {
 
-  private final ICalendar dummyModel = new ICalendar() {
-
+  /** A dummy calendar that accepts calls but does nothing. */
+  private static class DummyCal implements ICalendar {
+    @Override public void addEvent(IEvent e)            { }
+    @Override public void removeEvent(IEvent e)         { }
+    @Override public void addEventSeries(IEventSeries s){ }
 
     @Override
-    public void createEvent(Event event) {
+    public void removeEventSeries(IEventSeries series) {
 
     }
 
-    @Override
-    public void createEventSeries(List<Event> series) {
+    @Override public void replaceEvent(IEvent o, IEvent n){ }
+    @Override public List<IEvent> getEvents()           { return List.of(); }
+    @Override public List<IEvent> getScheduleInRange(LocalDate s, LocalDate e){ return List.of(); }
 
+    @Override
+    public IEventSeries getSeriesFor(IEvent e) {
+      return null;
     }
 
     @Override
-    public void editEvent(Event oldEvent, Event newEvent) {
+    public void replaceSeries(IEventSeries oldSeries, IEventSeries newSeries) {
 
     }
-
-
-    @Override public java.util.List<model.Event> getScheduleInRange(java.time.LocalDate start, java.time.LocalDate end) { return null; }
-  };
-
-  @Test
-  public void testValidCreateSingleTimed() {
-    // case 1: no “repeats”
-    String cmd = "create event Meeting from 2025-06-10T09:00 to 2025-06-10T10:00";
-    new CreateCommand(cmd).execute(dummyModel);
-    // no exception → pass
   }
 
-  @Test
-  public void testValidCreateTimedSeriesFor() {
-    // case 2: “repeats … for … times”
-    String cmd = "create event Standup from 2025-06-12T09:00 to 2025-06-12T09:15 repeats MWF for 5 times";
-    new CreateCommand(cmd).execute(dummyModel);
+  /** A stub view that swallows anything. */
+  private static class DummyView implements ITextView {
+    @Override public void takeMessage(String m)      { }
+    @Override public void clearTextBuffer()          { }
+    @Override public void displayTextInBuffer()      { }
+    @Override public List<String> getTextInBuffer()  { return List.of(); }
   }
 
-  @Test
-  public void testValidCreateTimedSeriesUntil() {
-    // case 3: “repeats … until …”
-    String cmd = "create event Report from 2025-06-01T08:00 to 2025-06-01T09:00 repeats TU until 2025-06-30";
-    new CreateCommand(cmd).execute(dummyModel);
+  /** A calendar that records how many events or series were added. */
+  private static class RecordingCal extends DummyCal {
+    int singleCount  = 0;
+    int seriesCount  = 0;
+    @Override public void addEvent(IEvent e)             { singleCount++; }
+    @Override public void addEventSeries(IEventSeries s) { seriesCount = s.getEvents().size(); }
   }
 
-  @Test
-  public void testValidCreateSingleAllDay() {
-    // case 4: “on <date>”, no repeats
-    String cmd = "create event Holiday on 2025-12-25";
-    new CreateCommand(cmd).execute(dummyModel);
+  private final ICalendar dummyCal  = new DummyCal();
+  private final ITextView dummyView = new DummyView();
+
+  // — parsing‐only smoke tests — no exceptions
+
+  @Test public void testValidCreateSingleTimed() {
+    new CreateCommand(
+            "create event Meeting from 2025-06-10T09:00 to 2025-06-10T10:00"
+    ).execute(dummyCal, dummyView);
   }
 
-  @Test
-  public void testValidCreateAllDaySeriesFor() {
-    // case 5: “on <date> repeats … for … times”
-    String cmd = "create event Yoga on 2025-06-11 repeats TRF for 3 times";
-    new CreateCommand(cmd).execute(dummyModel);
+  @Test public void testValidCreateTimedSeriesFor() {
+    new CreateCommand(
+            "create event Standup from 2025-06-12T09:00 to 2025-06-12T09:15 repeats MWF for 5 times"
+    ).execute(dummyCal, dummyView);
   }
 
-  @Test
-  public void testValidCreateAllDaySeriesUntil() {
-    // case 6: “on <date> repeats … until …”
-    String cmd = "create event Checkup on 2025-07-01 repeats W until 2025-07-31";
-    new CreateCommand(cmd).execute(dummyModel);
+  @Test public void testValidCreateTimedSeriesUntil() {
+    new CreateCommand(
+            "create event Report from 2025-06-01T08:00 to 2025-06-01T09:00 repeats TU until 2025-06-01"
+    ).execute(dummyCal, dummyView);
   }
+
+  @Test public void testValidCreateSingleAllDay() {
+    new CreateCommand(
+            "create event Holiday on 2025-12-25"
+    ).execute(dummyCal, dummyView);
+  }
+
+  @Test public void testValidCreateAllDaySeriesFor() {
+    new CreateCommand(
+            "create event Yoga on 2025-06-11 repeats TRF for 3 times"
+    ).execute(dummyCal, dummyView);
+  }
+
+  @Test public void testValidCreateAllDaySeriesUntil() {
+    new CreateCommand(
+            "create event Checkup on 2025-07-01 repeats U until 2025-07-01"
+    ).execute(dummyCal, dummyView);
+  }
+
+  // — malformed commands —
 
   @Test(expected = IllegalArgumentException.class)
   public void testMalformedCreateMissingKeyword() {
-    // Missing “event”
-    String cmd = "create evnt BadCommand";
-    new CreateCommand(cmd).execute(dummyModel);
+    new CreateCommand("create evnt BadCommand")
+            .execute(dummyCal, dummyView);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testMalformedCreateMissingFromTo() {
-    // Has “from” but no “to”
-    String cmd = "create event Meeting from 2025-06-10T09:00";
-    new CreateCommand(cmd).execute(dummyModel);
+    new CreateCommand("create event Meeting from 2025-06-10T09:00")
+            .execute(dummyCal, dummyView);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testMalformedCreateMissingOn() {
-    // Should be “on <date>”, but missing “on”
-    String cmd = "create event Holiday 2025-12-25";
-    new CreateCommand(cmd).execute(dummyModel);
+    new CreateCommand("create event Holiday 2025-12-25")
+            .execute(dummyCal, dummyView);
   }
-  @Test
-  public void testEventBuilderValid() {
-    // Build an event from 2025-06-10T09:00 → 2025-06-10T10:00, subject “Meeting”
+
+  // — event‐builder unit test —
+
+  @Test public void testEventBuilderValid() {
     IEvent e = Event.getBuilder()
             .subject("Meeting")
             .startDate(10, 6, 2025)
@@ -116,29 +129,48 @@ public class CreateCommandTest {
             .buildEvent();
 
     assertEquals("Meeting", e.getSubject());
-    assertEquals(LocalDate.of(2025, 6, 10), e.getStartDate());
-    assertEquals(LocalTime.of(9, 0), e.getStartTime());
-    assertEquals(LocalDate.of(2025, 6, 10), e.getEndDate());
-    assertEquals(LocalTime.of(10, 0), e.getEndTime());
+    assertEquals(LocalDate.of(2025,6,10), e.getStartDate());
+    assertEquals(LocalTime.of(9,0),     e.getStartTime());
+    assertEquals(LocalDate.of(2025,6,10), e.getEndDate());
+    assertEquals(LocalTime.of(10,0),    e.getEndTime());
   }
 
-  @Test
-  public void testCreateEventAddsToList() {
-    ICalendar cal = new Calendar();
+  // — integration: single event in real Calendar —
+
+  @Test public void testCreateEventAddsToList() {
+    Calendar cal = new Calendar();
     IEvent e = Event.getBuilder()
             .subject("Lunch")
-            .startDate(15, 6, 2025)
-            .startTime(12, 0)
-            .endDate(15, 6, 2025)
-            .endTime(13, 0)
+            .startDate(15,6,2025).startTime(12,0)
+            .endDate(15,6,2025).endTime(13,0)
             .buildEvent();
 
-    cal.createEvent((Event) e);
-    List<Event> all = cal.getScheduleInRange(LocalDate.of(2025, 6, 15),
-            LocalDate.of(2025, 6, 15));
+    cal.addEvent(e);
+    List<IEvent> all = cal.getScheduleInRange(
+            LocalDate.of(2025,6,15), LocalDate.of(2025,6,15)
+    );
     assertEquals(1, all.size());
     assertEquals(e, all.get(0));
   }
 
+  // — new: verify series‐for and series‐until produce correct counts —
+
+  @Test public void testCreateTimedSeriesForAddsCorrectCount() {
+    RecordingCal cal = new RecordingCal();
+    // match exactly your valid‐command test:
+    String cmd =
+            "create event Standup from 2025-06-12T09:00 to 2025-06-12T09:15 repeats MWF for 5 times";
+    new CreateCommand(cmd).execute(cal, dummyView);
+    assertEquals(5, cal.seriesCount);
+  }
+
+  @Test public void testCreateSeriesUntilAddsCorrectCount() {
+    // June 1 2025 is Sunday → repeat SU until June 1 2025 yields 1
+    RecordingCal cal = new RecordingCal();
+    new CreateCommand(
+            "create event Bar from 2025-06-01T08:00 to 2025-06-01T09:00 repeats SU until 2025-06-01"
+    ).execute(cal, dummyView);
+    assertEquals(1, cal.seriesCount);
+  }
 
 }

@@ -1,9 +1,10 @@
 package controller.command;
 
 import model.ICalendar;
+import view.ITextView;
 
 public interface Command {
-  public void execute(ICalendar model);
+  public void execute(ICalendar model, ITextView view);
 
   /**
    * Returns the remainder of the string after removing the first word and any

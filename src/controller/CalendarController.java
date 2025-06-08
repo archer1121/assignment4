@@ -1,65 +1,63 @@
 package controller;
 
-import java.util.Scanner;
-
 import controller.command.Command;
 import controller.command.CreateCommand;
+import controller.command.EditCommand;
+import controller.command.PrintCommand;
+import controller.command.ShowCommand;
 import model.ICalendar;
+import view.ITextView;
+import view.TextView;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.util.Scanner;
 
 public class CalendarController {
+  private final Scanner      scanner;
+  private final ICalendar    model;
+  private final ITextView    view;
 
-  Readable in;
-  Appendable out;
-
-  public CalendarController(Readable readable, Appendable appendable) {
-    this.in = readable;
-    this.out = appendable;
+  /**
+   * @param model  your calendar model
+   * @param in     where to read user commands (e.g. new InputStreamReader(System.in))
+   * @param out    where to send output (e.g. System.out)
+   */
+  public CalendarController(ICalendar model, Reader in, Appendable out) {
+    this.model   = model;
+    this.scanner = new Scanner(in);
+    this.view    = new TextView(out);
   }
-  public void go(ICalendar calendarModel) {
 
-    Scanner s = new Scanner(this.in);
-    //model.Calendar calendar = new EventCalendar();
-    while (s.hasNext()) {
-      String in = s.nextLine().trim();
-      int firstSpace = in.indexOf(' ');
-      if (firstSpace == -1) {
-        System.out.println(String.format("Unknown command %s", in));
-        continue;//very good
+  /**
+   * Main loop: read lines, dispatch to the right Command, render via TextView
+   */
+  public void go() throws IOException {
+    while (scanner.hasNextLine()) {
+      String line = scanner.nextLine().trim();
+      // clear previous output
+      view.clearTextBuffer();
+
+      Command cmd;
+      if (line.startsWith("create ")) {
+        cmd = new CreateCommand(line);
+      } else if (line.startsWith("edit ")) {
+        cmd = new EditCommand(line);
+      } else if (line.startsWith("print ")) {
+        cmd = new PrintCommand(line);
+      } else if (line.startsWith("show ")) {
+        cmd = new ShowCommand(line);
+      } else {
+        // unknown command
+        view.takeMessage("Unknown command: " + line);
+        view.displayTextInBuffer();
+        continue;
       }
-      String startingWord = in.substring(0, firstSpace);
-      switch(startingWord) {
-        case "create":
-          System.out.println("create");
-          Command createCommand = new CreateCommand(in);
-          createCommand.execute(calendarModel);
 
-          break;
-
-        case "edit":
-          System.out.println("edit");
-          Command editCommand = new CreateCommand(in);
-          editCommand.execute(calendarModel);
-
-          break;
-
-        case "print":
-          System.out.println("print");
-          Command printCommand = new CreateCommand(in);
-          printCommand.execute(calendarModel);
-
-          break;
-
-        case "show":
-          System.out.println("show");
-          Command showCommand = new CreateCommand(in);
-          showCommand.execute(calendarModel);
-
-          break;
-
-        default:
-          System.out.println(String.format("Unknown command %s", in));
-          break;
-      }
+      // execute into the view
+      cmd.execute(model, view);
+      // flush what the command wrote
+      view.displayTextInBuffer();
     }
   }
 }
