@@ -96,7 +96,6 @@ public class SeriesEditor {
     return find(facade.dateOf(day, month, year));
   }
 
-  /
 
   /**
    * Finds the first Event in this series with the specified dates.

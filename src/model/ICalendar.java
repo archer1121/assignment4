@@ -2,11 +2,19 @@ package model;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.time.ZoneId;
 
 /**
  * An Interface which represents a calendar that can hold events and event series separately.
  */
 public interface ICalendar {
+
+  /**
+   * Returns the timezone that this calendar is in.
+   * @return ZoneId representing this calendar's time zone.
+   */
+  ZoneId getTimeZone();
+
 
   /**
    * Adds an event to the calendar.

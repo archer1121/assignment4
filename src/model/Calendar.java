@@ -1,6 +1,7 @@
 package model;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,6 +10,12 @@ public class Calendar implements ICalendar {
   private final List<IEvent> eventList = new ArrayList<>();
   private final List<IEventSeries> seriesList = new ArrayList<>();
   private static final IDateTimeFacade facade = new DateTimeFacade();
+  private ZoneId zone;
+
+  @Override
+  public ZoneId getTimeZone() {
+    return null;
+  }
 
   @Override
   public void addEvent(IEvent event) {
