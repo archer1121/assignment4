@@ -1,13 +1,15 @@
 package model;
 
-public interface ICalendarManager {
-  void getCalendars();
-  void getCalendar(String name);
+import java.util.List;
 
-  void addCalendar(String name, ICalendar calendar);      // needs somewhere which creates calendars
+public interface ICalendarManager {
+  List<ICalendar> getCalendars();
+
+  ICalendar getCalendar(String name);
+
+  void changeName(String oldName, String newName);
+
+  void addCalendar(String name, ICalendar calendar);    // needs somewhere which creates calendars
 
   void removeCalendar(String name);
-
-
-
 }

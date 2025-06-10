@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -16,6 +17,11 @@ public class CreateCommandTest {
 
   /** A dummy calendar that accepts calls but does nothing. */
   private static class DummyCal implements ICalendar {
+    @Override
+    public ZoneId getTimeZone() {
+      return null;
+    }
+
     @Override public void addEvent(IEvent e)            { }
     @Override public void removeEvent(IEvent e)         { }
     @Override public void addEventSeries(IEventSeries s){ }

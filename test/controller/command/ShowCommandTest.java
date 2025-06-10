@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -20,6 +21,9 @@ public class ShowCommandTest {
     @Override public void addEvent(IEvent e)            { }
     @Override public void removeEvent(IEvent e)         { }
     @Override public void addEventSeries(IEventSeries s){ }
+    public ZoneId getTimeZone() {
+      return null;
+    }
 
     @Override
     public void removeEventSeries(IEventSeries series) {
