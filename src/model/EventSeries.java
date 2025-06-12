@@ -2,6 +2,7 @@ package model;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -12,7 +13,7 @@ import java.util.Set;
  * A class which holds a series of events along with a few unique methods for more querying of
  * the event series.
  */
-public class EventSeries implements IEventSeries, Iterable<IEvent> {
+public class EventSeries implements IEventSeries {
   private static final IDateTimeFacade facade = new DateTimeFacade();
 
   /**
@@ -65,7 +66,7 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
      */
     public EventSeriesBuilder copyEvent(IEvent event) {
       return new EventSeriesBuilder(
-        eventBuilder.subject(
+          Event.getBuilder().subject(
           event.getSubject())
           .status(event.getStatus())
           .startTime(
@@ -285,7 +286,7 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
                         .description(baseEvent.getDescription())
                         .startTime(
                                 facade.hourOf(baseEvent.getStartTime()),
-                                facade.minuteOf(baseEvent.getEndTime()))
+                                facade.minuteOf(baseEvent.getStartTime()))
                         .endTime(
                                 facade.hourOf(baseEvent.getEndTime()),
                                 facade.minuteOf(baseEvent.getEndTime())
@@ -311,6 +312,19 @@ public class EventSeries implements IEventSeries, Iterable<IEvent> {
   public EventSeries adopt(List<IEvent> newList) {
     return new EventSeries(baseEvent, weekDays, endDate, newList);
   }
+
+  @Override
+  public IEventSeries shiftTimeZone(ZoneId from, ZoneId to) {
+    IEvent shiftedEvent = baseEvent.shiftTimeZone(from, to);
+
+    int step = (int) facade.daysBetween(baseEvent.getEndDate(), shiftedEvent.getEndDate());
+
+    return EventSeries.editSeries(this)
+            .copyEvent(shiftedEvent).seriesEndDate(
+                    facade.stepDays(endDate, step)
+            ).buildSeries();
+  }
+
 
   @Override
   public Iterator<IEvent> iterator() {

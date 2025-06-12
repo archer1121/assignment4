@@ -37,6 +37,7 @@ public interface IDateTimeFacade {
    */
   LocalDate stepDays(LocalDate date, int amount);
 
+
   /**
    * Returns the time passed in, incremented by the amount of hours specified.
    *
@@ -62,6 +63,10 @@ public interface IDateTimeFacade {
    * @return year in the form of an Integer.
    */
   Integer YearOf(LocalDate date);
+
+
+  long daysBetween(LocalDate date1, LocalDate date2);
+
 
   /**
    * Returns the month of the passed in Date.
@@ -113,6 +118,15 @@ public interface IDateTimeFacade {
    * @return true if date1 is after date2.
    */
   boolean isAfter(LocalDate date1, LocalDate date2);
+
+  /**
+   * Returns whether date1 is before date2.
+   *
+   * @param date1 first date to be compared.
+   * @param date2 second date to be compared.
+   * @return true if date1 is before date2.
+   */
+  boolean isBefore(LocalDate date1, LocalDate date2);
 
   /**
    * Returns whether time1 is equal to time2.

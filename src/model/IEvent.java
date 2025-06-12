@@ -2,6 +2,7 @@ package model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 
 /**
  * An Interface containing getters which an Event must have. These getters ensure that
@@ -35,6 +36,15 @@ public interface IEvent {
    * @return end date in form of a LocalDate.
    */
   LocalDate getEndDate();
+
+  /**
+   * Treats this event as if it's in the time zone of 'from' and shifts it over to the matching time
+   * in 'to'.
+   * @param from The initial timezone.
+   * @param to The destination timezone.
+   * @return A new event reflecting these shifts.
+   */
+  IEvent shiftTimeZone(ZoneId from, ZoneId to);
 
   /**
    * Returns the end time of this event.

@@ -15,6 +15,15 @@ public interface ICalendar {
    */
   ZoneId getTimeZone();
 
+  /**
+   * Sets the timezone of this calendar. When this method is called, all events held in the calendar
+   * will be shifted by the offest created from the difference between the previous timezone, and
+   * the new one.
+   * @param timeZone The new timezone to set.
+   * @return ICalendar with the resulting changes.
+   */
+  ICalendar setTimeZone(ZoneId timeZone);
+
 
   /**
    * Adds an event to the calendar.
@@ -57,7 +66,7 @@ public interface ICalendar {
    * Gets a list of Events within the start and end dates.
    * @param start The start date.
    * @param end The end date.
-   * @return
+   * @return A list containing all Events found within the range
    */
   List<IEvent> getScheduleInRange(LocalDate start, LocalDate end);
 

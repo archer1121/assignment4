@@ -3,6 +3,8 @@ package model;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 
 /**
@@ -320,6 +322,21 @@ public class Event implements IEvent {
   @Override
   public LocalDate getEndDate() {
     return endDate;
+  }
+
+  @Override
+  public IEvent shiftTimeZone(ZoneId from, ZoneId to) {
+    ZonedDateTime fullStartTime = ZonedDateTime.of(startDate , startTime, from).withZoneSameInstant(to);
+    ZonedDateTime fullEndTime = ZonedDateTime.of(endDate , endTime, from).withZoneSameInstant(to);
+
+    return Event.editEvent(this)
+            .startTime(fullStartTime.getHour(), fullStartTime.getMinute())
+            .endTime(fullEndTime.getHour(), fullEndTime.getMinute())
+            .startDate(fullStartTime.getDayOfMonth(), fullStartTime.getMonth().getValue(),
+                    fullStartTime.getYear())
+            .endDate(fullEndTime.getDayOfMonth(), fullEndTime.getMonth().getValue(),
+                    fullEndTime.getYear())
+            .buildEvent();
   }
 
   @Override

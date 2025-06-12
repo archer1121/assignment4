@@ -1,13 +1,14 @@
 package model;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 /**
  * An Interface which all EventSeries Implementations must have. These methods allow querying
  * and utilizing the series as externally needed.
  */
-public interface IEventSeries {
+public interface IEventSeries extends Iterable<IEvent> {
   /**
    * returns the root event containing the start date and info for the event series.
    *
@@ -37,11 +38,20 @@ public interface IEventSeries {
   List<IEvent> getEvents();
 
   /**
-   * Returns a copy of this series with the givent list.
+   * Returns a copy of this series with the given list.
    *
    * @param newList the new List of events to represent
    * @return a new EventSeries
    */
-  EventSeries adopt(List<IEvent> newList);
+  IEventSeries adopt(List<IEvent> newList);
+
+  /**
+   * Treats every event in this series as if it's in the time zone of 'from' and shifts it over
+   * to the matching time in 'to'.
+   * @param from The initial timezone.
+   * @param to The destination timezone.
+   * @return A new series reflecting these shifts.
+   */
+  IEventSeries shiftTimeZone(ZoneId from, ZoneId to);
 
 }

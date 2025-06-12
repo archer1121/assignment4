@@ -1,20 +1,54 @@
 package model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Calendar implements ICalendar {
-  private final List<IEvent> eventList = new ArrayList<>();
-  private final List<IEventSeries> seriesList = new ArrayList<>();
   private static final IDateTimeFacade facade = new DateTimeFacade();
-  private ZoneId zone;
+  private final List<IEvent> eventList;
+  private final List<IEventSeries> seriesList;
+  private final ZoneId zone;
+
+
+  public Calendar() {
+    eventList = new ArrayList<>();
+    seriesList = new ArrayList<>();
+    zone = ZoneId.of("America/NewYork");
+  }
+
+  private Calendar(List<IEvent> eventList, List<IEventSeries> seriesList, ZoneId zone) {
+    this.eventList = new ArrayList<>(eventList);
+    this.seriesList = new ArrayList<>(seriesList);
+    this.zone = zone;
+  }
 
   @Override
   public ZoneId getTimeZone() {
-    return null;
+    return zone;
+  }
+
+  @Override
+  public ICalendar setTimeZone(ZoneId timeZone) {
+    List<IEvent> shiftedEventList = new ArrayList<>(eventList);
+    List<IEventSeries> shiftedSeriesList = new ArrayList<>(seriesList);
+
+    // this hunk needs to be moved out and into a more suited class.
+    for (IEvent e : eventList) {
+      shiftedEventList.add(e.shiftTimeZone(zone, timeZone));
+    }
+    for (IEventSeries s : seriesList) {
+      shiftedSeriesList.add(( s.shiftTimeZone(zone, timeZone)));
+    }
+
+
+    // shift everything before mutating. we don't want to keep a stale state in the case that the
+    // shift fails.
+    return new Calendar(shiftedEventList, shiftedSeriesList, timeZone);
   }
 
   @Override
@@ -41,7 +75,7 @@ public class Calendar implements ICalendar {
 
   @Override
   public void removeEventSeries(IEventSeries series) {
-
+    // do we need this if its not in spec?
   }
 
   @Override
@@ -55,7 +89,12 @@ public class Calendar implements ICalendar {
 
   @Override
   public List<IEvent> getEvents() {
-    return null;
+    List<IEvent> allEvents = new ArrayList<>(eventList);
+
+
+
+
+    return List.copyOf(eventList);
   }
 
   @Override

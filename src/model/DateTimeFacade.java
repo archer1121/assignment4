@@ -3,6 +3,7 @@ package model;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
@@ -48,6 +49,11 @@ public class DateTimeFacade implements IDateTimeFacade {
   @Override
   public Integer YearOf(LocalDate date) {
     return date.getYear();
+  }
+
+  @Override
+  public long daysBetween(LocalDate date1, LocalDate date2) {
+    return ChronoUnit.DAYS.between(date1, date2);
   }
 
   @Override
@@ -130,6 +136,11 @@ public class DateTimeFacade implements IDateTimeFacade {
   @Override
   public boolean isAfter(LocalDate date1, LocalDate date2) {
     return date1.isAfter(date2);
+  }
+
+  @Override
+  public boolean isBefore(LocalDate date1, LocalDate date2) {
+    return date1.isBefore(date2);
   }
 
   @Override
