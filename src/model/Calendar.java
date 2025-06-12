@@ -1,9 +1,7 @@
 package model;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +16,13 @@ public class Calendar implements ICalendar {
   public Calendar() {
     eventList = new ArrayList<>();
     seriesList = new ArrayList<>();
-    zone = ZoneId.of("America/NewYork");
+    zone = ZoneId.of("America/New_York");
+  }
+
+  public Calendar(ZoneId zone) {
+    eventList = new ArrayList<>();
+    seriesList = new ArrayList<>();
+    this.zone = zone;
   }
 
   private Calendar(List<IEvent> eventList, List<IEventSeries> seriesList, ZoneId zone) {
@@ -30,6 +34,32 @@ public class Calendar implements ICalendar {
   @Override
   public ZoneId getTimeZone() {
     return zone;
+  }
+
+  @Override
+  public void copyEventsAndShift(
+          LocalDate rangeStart, LocalDate rangeEnd, ICalendar from, LocalDate atStartDate) {
+
+    List<IEvent> events = from.getScheduleInRange(rangeStart, rangeEnd)
+            .stream()
+            .sorted(new EventComparator())
+            .collect(Collectors.toList());
+
+    if (events.isEmpty()) return;
+    long shift = facade.daysBetween(rangeStart, atStartDate);
+
+    if (shift > Integer.MAX_VALUE || shift < Integer.MIN_VALUE) {
+      throw new IllegalArgumentException("Cannot shift. Try a smaller number.");
+    }
+
+    for (IEvent event : events) {
+      eventList.add(event.shiftDays((int) shift));
+    }
+  }
+
+  @Override
+  public void copyEvents(LocalDate rangeStart, LocalDate rangeEnd, ICalendar from) {
+    copyEventsAndShift(rangeStart, rangeEnd, from, rangeStart);
   }
 
   @Override
@@ -90,11 +120,10 @@ public class Calendar implements ICalendar {
   @Override
   public List<IEvent> getEvents() {
     List<IEvent> allEvents = new ArrayList<>(eventList);
-
-
-
-
-    return List.copyOf(eventList);
+    for (IEventSeries s : seriesList) {
+      allEvents.addAll(s.getEvents());
+    }
+    return List.copyOf(allEvents);
   }
 
   @Override

@@ -340,6 +340,23 @@ public class Event implements IEvent {
   }
 
   @Override
+  public IEvent shiftDays(int days) {
+    LocalDate shiftStart = facade.stepDays(this.startDate, days);
+    LocalDate shiftEnd = facade.stepDays(this.endDate, days);
+    return Event.editEvent(this).startDate(
+            facade.dayOf(shiftStart),
+            facade.monthOf(shiftStart),
+            facade.YearOf(shiftStart)
+    ).endDate(
+            facade.dayOf(shiftEnd),
+            facade.monthOf(shiftEnd),
+            facade.YearOf(shiftEnd)
+    )
+            .buildEvent();
+  }
+
+
+  @Override
   public LocalTime getEndTime() {
     return endTime;
   }

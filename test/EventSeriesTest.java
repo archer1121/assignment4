@@ -1,6 +1,9 @@
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import model.DateTimeFacade;
@@ -8,6 +11,7 @@ import model.Event;
 import model.EventSeries;
 import model.IDateTimeFacade;
 import model.IEvent;
+import model.IEventSeries;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -108,5 +112,25 @@ public class EventSeriesTest {
             .endTime(13,0)
             .buildEvent();
     assertEquals(e, s.getBaseEvent());
+  }
+
+  @Test
+  public void testShiftEventSeriesTimeZone() {
+    EventSeries original = EventSeries.getBuilder()
+            .subject("TimeZone Test")
+            .eventStartDate(1, 6, 2025)
+            .eventEndDate(1, 6, 2025)
+            .eventStartTime(8, 0)
+            .eventEndTime(9, 0)
+            .weekDays("W")
+            .seriesEndDate(LocalDate.of(2025, 6, 12))
+            .buildSeries();
+
+    IEventSeries shifted = original.shiftTimeZone(ZoneId.of("America/New_York"), ZoneId.of("UTC"));
+
+    List<IEvent> events = shifted.getEvents();
+    assertEquals(2, events.size()); // Wednesdays: June 4, 11
+    assertEquals(LocalTime.of(12, 0), events.get(0).getStartTime());
+    assertEquals(LocalTime.of(13, 0), events.get(0).getEndTime());
   }
 }

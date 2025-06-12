@@ -57,6 +57,27 @@ public interface ICalendar {
   void replaceEvent(IEvent oldEvent, IEvent newEvent);
 
   /**
+   * Copies all events yielded by from in the given range into this calendar and shifts them
+   * so that the earliest date in the range matches atStartDate, then the others follow, keeping
+   * their original pattern and structure.
+   * @param rangeStart The start date of the range.
+   * @param rangeEnd  The end date of the range.
+   * @param from The calendar to copy from.
+   * @param atStartDate new position in the timeline the range of events will begin at.
+   * */
+  void copyEventsAndShift(
+          LocalDate rangeStart, LocalDate rangeEnd, ICalendar from, LocalDate atStartDate
+  );
+
+  /**
+   * Copies all events yielded by from in the given range into this calendar.
+   * @param rangeStart The start date of the range.
+   * @param rangeEnd  The end date of the range.
+   * @param from The calendar to copy from.
+   */
+  void copyEvents(LocalDate rangeStart, LocalDate rangeEnd, ICalendar from);
+
+  /**
    * Returns all events in this calendar.
    * @return List of all events in the calendar.
    */

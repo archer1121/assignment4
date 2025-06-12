@@ -46,6 +46,15 @@ public interface IEvent {
    */
   IEvent shiftTimeZone(ZoneId from, ZoneId to);
 
+
+  /**
+   * Returns this date, shifted by the number of days.
+   * @param days The number of days to shift.
+   * @return the shifted event.
+   */
+  IEvent shiftDays(int days);
+
+
   /**
    * Returns the end time of this event.
    *
