@@ -1,29 +1,27 @@
 import static org.junit.Assert.*;
 
 import model.Calendar;
+import model.Event;
+import model.EventSeries;
+import model.ICalendar;
 import model.IEvent;
+import model.IEventSeries;
 
-import model.*;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class CalendarTest {
   private ICalendar calendar;
   private IEvent testEvent;
   private IEvent shiftedEvent;
-  private ZoneId defaultZone;
 
   @Before
   public void setup() {
     calendar = new Calendar();
-    defaultZone = ZoneId.of("America/New_York");
 
     testEvent = Event.getBuilder()
             .subject("Test Event")
@@ -104,7 +102,7 @@ public class CalendarTest {
 
   @Test
   public void addEventSeriesEventsToCalendarWorks() {
-    EventSeries series = EventSeries.getBuilder()
+    IEventSeries series = EventSeries.getBuilder()
             .subject("Series Test")
             .eventStartDate(1, 6, 2025)
             .eventEndDate(1, 6, 2025)
