@@ -47,7 +47,7 @@ public class DateTimeFacade implements IDateTimeFacade {
   }
 
   @Override
-  public Integer YearOf(LocalDate date) {
+  public Integer yearOf(LocalDate date) {
     return date.getYear();
   }
 
@@ -114,8 +114,9 @@ public class DateTimeFacade implements IDateTimeFacade {
         return DayOfWeek.SATURDAY;
       case 'U':
         return DayOfWeek.SUNDAY;
+      default:
+        return null  ;
     }
-    return null;
   }
 
   @Override

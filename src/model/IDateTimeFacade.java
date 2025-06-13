@@ -62,7 +62,7 @@ public interface IDateTimeFacade {
    * @param date the date.
    * @return year in the form of an Integer.
    */
-  Integer YearOf(LocalDate date);
+  Integer yearOf(LocalDate date);
 
 
   long daysBetween(LocalDate date1, LocalDate date2);

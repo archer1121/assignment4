@@ -76,7 +76,7 @@ public class EventSeries implements IEventSeries {
           .startDate(
             facade.dayOf(event.getStartDate()),
             facade.monthOf(event.getStartDate()),
-            facade.YearOf(event.getStartDate())
+            facade.yearOf(event.getStartDate())
           )
           .endTime(
             facade.hourOf(event.getEndTime()),
@@ -85,10 +85,10 @@ public class EventSeries implements IEventSeries {
           .endDate(
             facade.dayOf(event.getEndDate()),
             facade.monthOf(event.getEndDate()),
-            facade.YearOf(event.getEndDate())
+            facade.yearOf(event.getEndDate())
           )
-          .description(event.getDescription())
-              , weekDays, seriesEndDate, initialDate);
+          .description(event.getDescription()),
+              weekDays, seriesEndDate, initialDate);
     }
 
     /**
@@ -294,12 +294,12 @@ public class EventSeries implements IEventSeries {
                         .startDate(
                                 facade.dayOf(currentDate),
                                 facade.monthOf(currentDate),
-                                facade.YearOf(currentDate)
+                                facade.yearOf(currentDate)
                         )
                         .endDate(
                                 facade.dayOf(currentDate),
                                 facade.monthOf(currentDate),
-                                facade.YearOf(currentDate)
+                                facade.yearOf(currentDate)
                         )
                         .buildEvent());
       }
@@ -353,12 +353,20 @@ public class EventSeries implements IEventSeries {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
+    if (this == o) {
+      return true;
+    }
     if (o instanceof EventSeries) {
       EventSeries other = (EventSeries) o;
       return this.eventSeries.equals(other.eventSeries);
     }
     return false;
   }
+
+  @Override
+  public int hashCode() {
+    return this.eventSeries.hashCode();
+  }
+
 
 }

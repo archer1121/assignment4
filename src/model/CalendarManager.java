@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * An implementation of the calendar manager interface which holds calendars and supports
+ * basic operations with those calendars.
+ */
 public class CalendarManager implements ICalendarManager {
   Map<String, ICalendar> calendars;
 

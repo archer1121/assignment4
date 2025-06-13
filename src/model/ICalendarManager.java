@@ -2,6 +2,10 @@ package model;
 
 import java.util.List;
 
+/**
+ * An Interface for Calendar managers. This Interface allows them to add, remove, and change
+ * names of its calendars.
+ */
 public interface ICalendarManager {
   List<String> getCalendars();
 

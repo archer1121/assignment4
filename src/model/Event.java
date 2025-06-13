@@ -326,7 +326,8 @@ public class Event implements IEvent {
 
   @Override
   public IEvent shiftTimeZone(ZoneId from, ZoneId to) {
-    ZonedDateTime fullStartTime = ZonedDateTime.of(startDate , startTime, from).withZoneSameInstant(to);
+    ZonedDateTime fullStartTime = ZonedDateTime.of(startDate , startTime, from)
+            .withZoneSameInstant(to);
     ZonedDateTime fullEndTime = ZonedDateTime.of(endDate , endTime, from).withZoneSameInstant(to);
 
     return Event.editEvent(this)
@@ -346,11 +347,11 @@ public class Event implements IEvent {
     return Event.editEvent(this).startDate(
             facade.dayOf(shiftStart),
             facade.monthOf(shiftStart),
-            facade.YearOf(shiftStart)
+            facade.yearOf(shiftStart)
     ).endDate(
             facade.dayOf(shiftEnd),
             facade.monthOf(shiftEnd),
-            facade.YearOf(shiftEnd)
+            facade.yearOf(shiftEnd)
     )
             .buildEvent();
   }

@@ -6,12 +6,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * A Calendar which stores Events and Event Series separately. This Implementation is immutable.
+ */
 public class Calendar implements ICalendar {
   private static final IDateTimeFacade facade = new DateTimeFacade();
   private final List<IEvent> eventList;
   private final List<IEventSeries> seriesList;
   private final ZoneId zone;
 
+/**
+ *  Creates a new calendar With the default timezone of EST.
+ */
 
   public Calendar() {
     eventList = new ArrayList<>();
@@ -19,6 +25,10 @@ public class Calendar implements ICalendar {
     zone = ZoneId.of("America/New_York");
   }
 
+  /**
+   * Creates a time zone with the specified zone.
+   * @param zone The time zone this calendar will represent.
+   */
   public Calendar(ZoneId zone) {
     eventList = new ArrayList<>();
     seriesList = new ArrayList<>();
@@ -45,7 +55,9 @@ public class Calendar implements ICalendar {
             .sorted(new EventComparator())
             .collect(Collectors.toList());
 
-    if (events.isEmpty()) return;
+    if (events.isEmpty()) {
+      return;
+    }
     long shift = facade.daysBetween(rangeStart, atStartDate);
 
     if (shift > Integer.MAX_VALUE || shift < Integer.MIN_VALUE) {
@@ -131,16 +143,16 @@ public class Calendar implements ICalendar {
     List<IEvent> results = new ArrayList<>();
     for (IEvent e : eventList) {
       LocalDate d = e.getStartDate();
-      if ((d.isEqual(start) || d.isAfter(start)) &&
-              (d.isEqual(end)   || d.isBefore(end))) {
+      if ((d.isEqual(start) || d.isAfter(start))
+              && (d.isEqual(end) || d.isBefore(end))) {
         results.add(e);
       }
     }
     for (IEventSeries s : seriesList) {
       for (IEvent e : s.getEvents()) {
         LocalDate d = e.getStartDate();
-        if ((d.isEqual(start) || d.isAfter(start)) &&
-                (d.isEqual(end)   || d.isBefore(end))) {
+        if ((d.isEqual(start) || d.isAfter(start))
+                && (d.isEqual(end) || d.isBefore(end))) {
           results.add(e);
         }
       }

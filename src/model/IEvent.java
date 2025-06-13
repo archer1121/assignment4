@@ -77,7 +77,7 @@ public interface IEvent {
   EventStatus getStatus();
 
   /**
-   * Returns the description of this event
+   * Returns the description of this event.
    *
    * @return A String containing the description for this event.
    */
