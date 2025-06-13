@@ -3,6 +3,7 @@ package model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * An editor for the EventSeries. Supports 3 variant replace() operations.
@@ -53,21 +54,36 @@ public class SeriesEditor {
    */
   public SeriesEditor replaceRange(IEvent oldEvent, IEvent newEvent) {
     List<IEvent> beforeActivation = new ArrayList<>();
-    List<IEvent> afterActivation = new ArrayList<>();
     boolean activated = false;
+
+    // we need to add original events until we hit the place of oldEvent.
     for (int i = 0; i < series.getEvents().size(); i++) {
       if (series.getEvents().get(i).equals(oldEvent)) {
-        afterActivation.addAll(
-                EventSeries.editSeries(series)
-                        .copyEvent(newEvent)
-                        .buildSeries()
-                        .getEvents().subList(i, series.getEvents().size())
-        );
         activated = true;
-      } else if (!activated) {
-        beforeActivation.add(series.getEvents().get(i));
+        break;
       }
+      beforeActivation.add(series.getEvents().get(i));
     }
+
+    if (!activated) {
+      throw new IllegalArgumentException("Old event isn't in the series.");
+    }
+
+    // we need to create a similar series containing the new events
+    List<IEvent> replacements = EventSeries
+            .editSeries(series)
+            .copyEvent(newEvent)
+            .buildSeries()
+            .getEvents();
+
+    // we need an identifier for knowing where exactly to splice these two series lists together.
+    LocalDate cutoffDate = oldEvent.getStartDate();
+
+    List<IEvent> afterActivation = replacements.stream()
+            .filter(e -> !facade.isBefore(e.getStartDate(), cutoffDate))
+            .collect(Collectors.toList());
+
+
     beforeActivation.addAll(afterActivation);
     series = series.adopt(beforeActivation);
     return this;

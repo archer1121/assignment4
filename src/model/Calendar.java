@@ -105,7 +105,7 @@ public class Calendar implements ICalendar {
 
   @Override
   public void removeEventSeries(IEventSeries series) {
-    // do we need this if its not in spec?
+    seriesList.remove(series);
   }
 
   @Override

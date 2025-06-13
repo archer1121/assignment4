@@ -1,4 +1,7 @@
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import model.Calendar;
 import model.Event;
@@ -14,6 +17,9 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 
+/**
+ * Class containing tests for the Calendar Implementation.
+ */
 public class CalendarTest {
   private ICalendar calendar;
   private IEvent testEvent;
@@ -54,7 +60,7 @@ public class CalendarTest {
   }
 
   @Test
-  public void replaceEvent() {
+  public void replaceEventWorks() {
     calendar.addEvent(testEvent);
     calendar.replaceEvent(testEvent, shiftedEvent);
     assertTrue(calendar.getEvents().contains(shiftedEvent));
@@ -116,9 +122,87 @@ public class CalendarTest {
       calendar.addEvent(event);
     }
 
-    assertEquals(9, calendar.getEvents());
+    assertEquals(9, calendar.getEvents().size());
   }
 
+  @Test
+  public void getEventsOnDayWorks() {
+    // 2 events on June 5
+    IEvent event1 = Event.getBuilder()
+            .subject("event 1")
+            .startDate(5, 6, 2025)
+            .startTime(9, 0)
+            .endDate(5, 6, 2025)
+            .endTime(10, 0)
+            .buildEvent();
 
+    IEvent event2 = Event.getBuilder()
+            .subject("event 2")
+            .startDate(5, 6, 2025)
+            .startTime(14, 0)
+            .endDate(5, 6, 2025)
+            .endTime(16, 0)
+            .buildEvent();
+
+    IEvent event3 = Event.getBuilder()
+            .subject("event 3")
+            .startDate(6, 6, 2025)
+            .startTime(11, 0)
+            .endDate(6, 6, 2025)
+            .endTime(12, 0)
+            .buildEvent();
+
+    calendar.addEvent(event1);
+    calendar.addEvent(event2);
+    calendar.addEvent(event3);
+
+    LocalDate queryDate = LocalDate.of(2025, 6, 5);
+    List<IEvent> result = calendar.getScheduleInRange(queryDate, queryDate);
+
+    // only 2 events should come up out of the 3
+    assertEquals(2, result.size());
+    assertTrue(result.contains(event1));
+    assertTrue(result.contains(event2));
+  }
+
+  @Test
+  public void getEventsInRangeWorks() {
+    //  2 events on June 5, 2025
+    IEvent event1 = Event.getBuilder()
+            .subject("event 1")
+            .startDate(5, 6, 2025)
+            .startTime(9, 0)
+            .endDate(5, 6, 2025)
+            .endTime(10, 0)
+            .buildEvent();
+
+    IEvent event2 = Event.getBuilder()
+            .subject("event 2")
+            .startDate(5, 6, 2025)
+            .startTime(14, 0)
+            .endDate(5, 6, 2025)
+            .endTime(16, 0)
+            .buildEvent();
+
+    IEvent event3 = Event.getBuilder()
+            .subject("event 3")
+            .startDate(6, 6, 2025)
+            .startTime(11, 0)
+            .endDate(6, 6, 2025)
+            .endTime(12, 0)
+            .buildEvent();
+
+    calendar.addEvent(event1);
+    calendar.addEvent(event2);
+    calendar.addEvent(event3);
+
+    LocalDate start = LocalDate.of(2025, 6, 5);
+    LocalDate end = LocalDate.of(2025, 6, 7);
+    List<IEvent> result = calendar.getScheduleInRange(start, end);
+
+    assertEquals(3, result.size());
+    assertTrue(result.contains(event1));
+    assertTrue(result.contains(event2));
+  }
 }
 

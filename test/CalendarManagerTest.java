@@ -4,12 +4,16 @@ import org.junit.Test;
 import model.Calendar;
 import model.CalendarManager;
 import model.ICalendar;
+import model.ICalendarManager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
+/**
+ * Class containing test for the CalendarManager.
+ */
 public class CalendarManagerTest {
-  private CalendarManager manager;
+  private ICalendarManager manager;
 
   @Before
   public void setUp() {
@@ -69,7 +73,7 @@ public class CalendarManagerTest {
     String name = "TestCal";
     String newName = "OtherTestCal";
 
-    Calendar calendar = new Calendar();
+    ICalendar calendar = new Calendar();
 
     manager.addCalendar(name, calendar);
     manager.changeName(name, newName);
@@ -84,8 +88,8 @@ public class CalendarManagerTest {
     String name = "TestCal";
     String newName = "OtherTestCal";
 
-    Calendar calendar1 = new Calendar();
-    Calendar calendar2 = new Calendar();
+    ICalendar calendar1 = new Calendar();
+    ICalendar calendar2 = new Calendar();
 
     // Add them to the manager under their respective names.
     manager.addCalendar(name, calendar1);

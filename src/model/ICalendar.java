@@ -91,8 +91,18 @@ public interface ICalendar {
    */
   List<IEvent> getScheduleInRange(LocalDate start, LocalDate end);
 
-
+  /**
+   * Takes an event and finds the series its located in if possible.
+   * @param event the event seed which is used to find a series.
+   * @return the series if found, or null otherwise.
+   */
   IEventSeries getSeriesFor(IEvent event);
 
+  /**
+   * Replaces the oldSeries in the calendar with the newSeries. Useful for bulk operations and
+   * series edits when combined with SeriesEditor and methods which utilize a series builder.
+   * @param oldSeries The series to be replaced.
+   * @param newSeries The replacement series.
+   */
   void replaceSeries(IEventSeries oldSeries, IEventSeries newSeries);
 }
