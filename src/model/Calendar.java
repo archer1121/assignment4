@@ -15,10 +15,9 @@ public class Calendar implements ICalendar {
   private final List<IEventSeries> seriesList;
   private final ZoneId zone;
 
-/**
- *  Creates a new calendar With the default timezone of EST.
- */
-
+  /**
+  *  Creates a new calendar With the default timezone of EST.
+  */
   public Calendar() {
     eventList = new ArrayList<>();
     seriesList = new ArrayList<>();
