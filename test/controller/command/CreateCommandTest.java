@@ -22,6 +22,11 @@ public class CreateCommandTest {
       return null;
     }
 
+    @Override
+    public ICalendar setTimeZone(ZoneId timeZone) {
+      return null;
+    }
+
     @Override public void addEvent(IEvent e)            { }
     @Override public void removeEvent(IEvent e)         { }
     @Override public void addEventSeries(IEventSeries s){ }
@@ -32,6 +37,17 @@ public class CreateCommandTest {
     }
 
     @Override public void replaceEvent(IEvent o, IEvent n){ }
+
+    @Override
+    public void copyEventsAndShift(LocalDate rangeStart, LocalDate rangeEnd, ICalendar from, LocalDate atStartDate) {
+
+    }
+
+    @Override
+    public void copyEvents(LocalDate rangeStart, LocalDate rangeEnd, ICalendar from) {
+
+    }
+
     @Override public List<IEvent> getEvents()           { return List.of(); }
     @Override public List<IEvent> getScheduleInRange(LocalDate s, LocalDate e){ return List.of(); }
 

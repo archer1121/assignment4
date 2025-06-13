@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,10 +12,13 @@ public class CalendarManager implements ICalendarManager {
     this.calendars = new HashMap<>();
   }
 
+  // in CalendarManager.java
   @Override
-  public List<ICalendar> getCalendars() {
-    return List.copyOf(calendars.values());
+  public List<String> getCalendars() {
+    // Return the keys (names) of the map
+    return new ArrayList<>(this.calendars.keySet());
   }
+
 
   @Override
   public ICalendar getCalendar(String name) {

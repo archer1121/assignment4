@@ -1,6 +1,8 @@
 package controller.command;
 
-import model.*;
+import model.Event;
+import model.ICalendar;
+import model.IEvent;
 import view.ITextView;
 
 import java.time.DayOfWeek;

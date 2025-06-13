@@ -3,7 +3,7 @@ package model;
 import java.util.List;
 
 public interface ICalendarManager {
-  List<ICalendar> getCalendars();
+  List<String> getCalendars();
 
   ICalendar getCalendar(String name);
 

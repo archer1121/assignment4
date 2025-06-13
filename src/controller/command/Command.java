@@ -3,6 +3,9 @@ package controller.command;
 import model.ICalendar;
 import view.ITextView;
 
+/**
+ * Command.
+ */
 public interface Command {
   public void execute(ICalendar model, ITextView view);
 
@@ -44,6 +47,13 @@ public interface Command {
     return trimmed.substring(0, spaceIdx);
   }
 
+  /**
+   * Gets next word.
+   * @param wordBefore before word
+   * @param command command
+   * @return string
+   * @throws IllegalArgumentException uhoh
+   */
   static String getWordAfter(String wordBefore, String command) throws IllegalArgumentException {
     if (wordBefore == null || wordBefore.isEmpty()) {
       throw new IllegalArgumentException("wordBefore must be non‐empty");
