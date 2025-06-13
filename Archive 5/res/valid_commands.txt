@@ -1,0 +1,44 @@
+create event Meeting from 2025-06-10T09:00 to 2025-06-10T10:00
+create event Holiday on 2025-12-25
+create event Standup from 2025-06-12T09:00 to 2025-06-12T09:15 repeats MWF for 5 times
+create event Report from 2025-06-01T08:00 to 2025-06-01T09:00 repeats TU until 2025-06-30
+create event Yoga on 2025-06-11 repeats TRF for 3 times
+create event Checkup on 2025-07-01 repeats W until 2025-07-31
+
+print events on 2025-06-10
+print events from 2025-06-01T08:00 to 2025-06-01T09:00
+show status on 2025-06-10T09:00
+
+edit event subject Lunch from 2025-06-15T12:00 to 2025-06-15T13:00 with Brunch
+edit events location Conference from 2025-06-25T10:00 with ONLINE
+edit series status Review from 2025-06-30T16:00 with PUBLIC
+
+create calendar --name Work    --timezone America/New_York
+create calendar --name Personal --timezone Europe/Paris
+
+edit calendar --name Work    --property name      Office
+
+edit calendar --name Office  --property timezone  Asia/Tokyo
+
+use calendar --name Office
+
+create event Meeting from 2025-06-10T09:00 to 2025-06-10T10:00
+create event Standup from 2025-06-12T09:00 to 2025-06-12T09:15 repeats MWF for 5 times
+
+
+create event Report from 2025-06-01T08:00 to 2025-06-01T09:00 repeats TU until 2025-06-30
+create event Holiday on 2025-12-25
+create event Yoga on 2025-06-11 repeats TRF for 3 times
+create event Checkup on 2025-07-01 repeats W until 2025-07-31
+print events on 2025-06-10
+
+print events from 2025-06-01T00:00 to 2025-06-02T23:59
+
+show status on 2025-06-10T09:30
+
+copy event Meeting on 2025-06-10T09:00 --target Personal to 2025-07-01T10:00
+
+copy events on 2025-06-10 --target Personal to 2025-07-01
+
+copy events between 2025-06-01 and 2025-06-30 --target Personal to 2025-07-01
+
