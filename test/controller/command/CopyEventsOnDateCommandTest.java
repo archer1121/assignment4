@@ -13,8 +13,11 @@ import view.TextView;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+/**
+ * Test copying events on a given date.
+ */
 public class CopyEventsOnDateCommandTest {
   private ICalendarManager mgr;
   private ITextView view;

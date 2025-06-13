@@ -3,9 +3,16 @@ package controller.command;
 import model.ICalendarManager;
 import view.ITextView;
 
+/**
+ * Lets user switch calendar.
+ */
 public class UseCalendarCommand implements ManagerCommand {
   private final String cmd;
 
+  /**
+   * Constructs command.
+   * @param cmd string
+   */
   public UseCalendarCommand(String cmd) {
     this.cmd = cmd.trim();
   }

@@ -8,8 +8,15 @@ import java.io.InputStreamReader;
 import controller.CalendarController;
 import model.CalendarManager;
 
+/**
+ * The main program and entry point.
+ */
 public class CalendarApp {
 
+  /**
+   * The enetry point.
+   * @param args command line args
+   */
   public static void main(String[] args) {
     try {
       run(args, System.in, System.out);
@@ -37,7 +44,7 @@ public class CalendarApp {
     CalendarManager mgr = new CalendarManager();
 
     if ("interactive".equals(mode)) {
-      new CalendarController(mgr, new InputStreamReader(in), out).go();
+      new CalendarController(mgr, new InputStreamReader(in), out).goo();
 
     } else if ("headless".equals(mode)) {
       if (args.length < 3) {
@@ -45,7 +52,7 @@ public class CalendarApp {
       }
       String file = args[2];
       try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-        new CalendarController(mgr, reader, out).go();
+        new CalendarController(mgr, reader, out).goo();
       } catch (FileNotFoundException e) {
         throw new IllegalArgumentException("File not found: " + file);
       }

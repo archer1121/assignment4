@@ -1,6 +1,13 @@
 package controller.command;
 
-import model.*;
+import model.Event;
+import model.EventLocation;
+import model.EventSeries;
+import model.EventStatus;
+import model.ICalendar;
+import model.IEvent;
+import model.IEventSeries;
+import model.SeriesEditor;
 import view.ITextView;
 
 import java.time.LocalDate;
@@ -24,6 +31,10 @@ public class EditCommand implements Command {
 
   private final String command;
 
+  /**
+   * Constructs command.
+   * @param command string
+   */
   public EditCommand(String command) {
     this.command = command.trim();
   }
@@ -44,9 +55,9 @@ public class EditCommand implements Command {
 
       // single‐instance edit
       property = Command.getWordAfter("edit event", command);
-      subject  = Command.getWordAfter(property, command);
-      fromDT   = LocalDateTime.parse(Command.getWordAfter("from", command));
-      toDT     = LocalDateTime.parse(Command.getWordAfter("to", command));
+      subject = Command.getWordAfter(property, command);
+      fromDT = LocalDateTime.parse(Command.getWordAfter("from", command));
+      toDT = LocalDateTime.parse(Command.getWordAfter("to", command));
       newValue = Command.getWordAfter("with", command);
 
     } else if (command.startsWith("edit events ")
@@ -56,8 +67,8 @@ public class EditCommand implements Command {
 
       // tail‐of‐series edit
       property = Command.getWordAfter("edit events", command);
-      subject  = Command.getWordAfter(property, command);
-      fromDT   = LocalDateTime.parse(Command.getWordAfter("from", command));
+      subject = Command.getWordAfter(property, command);
+      fromDT = LocalDateTime.parse(Command.getWordAfter("from", command));
       newValue = Command.getWordAfter("with", command);
 
     } else if (command.startsWith("edit series ")
@@ -67,8 +78,8 @@ public class EditCommand implements Command {
 
       // whole‐series edit
       property = Command.getWordAfter("edit series", command);
-      subject  = Command.getWordAfter(property, command);
-      fromDT   = LocalDateTime.parse(Command.getWordAfter("from", command));
+      subject = Command.getWordAfter(property, command);
+      fromDT = LocalDateTime.parse(Command.getWordAfter("from", command));
       newValue = Command.getWordAfter("with", command);
 
     } else {
@@ -83,8 +94,8 @@ public class EditCommand implements Command {
     // Break out date/time pieces
     LocalDate fromDate = fromDT.toLocalDate();
     LocalTime fromTime = fromDT.toLocalTime();
-    LocalDate toDate   = (toDT != null) ? toDT.toLocalDate() : null;
-    LocalTime toTime   = (toDT != null) ? toDT.toLocalTime() : null;
+    LocalDate toDate = (toDT != null) ? toDT.toLocalDate() : null;
+    LocalTime toTime = (toDT != null) ? toDT.toLocalTime() : null;
 
     // Locate oldEvent in model
     List<IEvent> candidates = model.getScheduleInRange(fromDate, fromDate);

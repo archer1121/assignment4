@@ -46,7 +46,7 @@ public class CalendarController {
   /**
    * Main loop: read lines, dispatch to the right Command, render via TextView.
    */
-  public void go() throws IOException {
+  public void goo() throws IOException {
     while (scanner.hasNextLine()) {
       String line = scanner.nextLine().trim();
       view.clearTextBuffer();
@@ -122,7 +122,7 @@ public class CalendarController {
         continue;
       }
 
-      // ───────── All remaining commands are calendar‐scoped ─────────
+      // ─────── All remaining commands are calendar‐scoped
       if (currentCalendarName == null) {
         view.takeMessage("ERROR: no calendar selected. Use \"use calendar --name <name>\"");
         view.displayTextInBuffer();

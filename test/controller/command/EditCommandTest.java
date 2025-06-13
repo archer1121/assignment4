@@ -1,7 +1,10 @@
-// src/test/java/controller/command/EditCommandTest.java
 package controller.command;
 
-import model.*;
+import model.Calendar;
+import model.Event;
+import model.EventLocation;
+import model.EventStatus;
+import model.IEvent;
 import view.ITextView;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,20 +13,36 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+/**
+ * Test edit command.
+ */
 public class EditCommandTest {
 
   private Calendar cal;
   private static final ITextView DUMMY_VIEW = new ITextView() {
-    @Override public void takeMessage(String m) { }
-    @Override public void clearTextBuffer() { }
-    @Override public void displayTextInBuffer() {}
-    @Override public List<String> getTextInBuffer() { return List.of(); }
+
+    @Override public void takeMessage(String m) {
+      //comment
+    }
+
+    @Override public void clearTextBuffer() {
+      //comment
+    }
+
+    @Override public void displayTextInBuffer() {
+      //comment
+    }
+
+    @Override public List<String> getTextInBuffer() {
+      return List.of();
+    }
   };
 
   @Before
   public void setUp() {
+
     cal = new Calendar();
   }
 
@@ -41,7 +60,8 @@ public class EditCommandTest {
     ).execute(cal, DUMMY_VIEW);
 
     List<IEvent> res = cal.getScheduleInRange(
-            LocalDate.of(2025,6,15), LocalDate.of(2025,6,15)
+            LocalDate.of(2025,6,15),
+            LocalDate.of(2025,6,15)
     );
     assertEquals(1, res.size());
     IEvent e = res.get(0);

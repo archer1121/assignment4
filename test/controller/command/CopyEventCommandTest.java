@@ -16,6 +16,9 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+/**
+ * Tests for copy event single.
+ */
 public class CopyEventCommandTest {
   private ICalendarManager mgr;
   private ITextView view;

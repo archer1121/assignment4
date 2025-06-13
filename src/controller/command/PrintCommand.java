@@ -9,11 +9,20 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+/**
+ * Command used to print the events or series.
+ */
 public class PrintCommand implements Command {
 
   private final String command;
 
+  /**
+   * Constructor.
+   *
+   * @param command string
+   */
   public PrintCommand(String command) {
+
     this.command = command.trim();
   }
 
@@ -25,7 +34,7 @@ public class PrintCommand implements Command {
 
       String dateStr = Command.getWordAfter("on", command);
       LocalDate d = LocalDate.parse(dateStr);
-      List<IEvent> events = model.getScheduleInRange(d,d);
+      List<IEvent> events = model.getScheduleInRange(d, d);
       for (IEvent e : events) {
         view.takeMessage(formatLine(e));
       }
@@ -37,7 +46,7 @@ public class PrintCommand implements Command {
             && command.contains(" to ")) {
 
       LocalDateTime dt1 = LocalDateTime.parse(Command.getWordAfter("from", command));
-      LocalDateTime dt2 = LocalDateTime.parse(Command.getWordAfter("to",   command));
+      LocalDateTime dt2 = LocalDateTime.parse(Command.getWordAfter("to", command));
       List<IEvent> events = model.getScheduleInRange(dt1.toLocalDate(), dt2.toLocalDate());
       for (IEvent e : events) {
         view.takeMessage(formatLine(e));

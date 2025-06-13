@@ -7,10 +7,17 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Show status on a day, show available or busy.
+ */
 public class ShowCommand implements Command {
 
   private final String command;
 
+  /**
+   * Show status on a day, show available or busy.
+   * @param command string
+   */
   public ShowCommand(String command) {
     this.command = command.trim();
   }

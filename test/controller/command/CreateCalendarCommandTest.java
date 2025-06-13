@@ -12,8 +12,13 @@ import view.TextView;
 import java.time.ZoneId;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+/**
+ * Tests for creating a calendar.
+ */
 public class CreateCalendarCommandTest {
   private ICalendarManager mgr;
   private ITextView view;

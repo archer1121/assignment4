@@ -9,15 +9,15 @@ import java.time.ZoneId;
 
 /**
  * Command to edit an existing calendar's name or timezone.
- *
- * Syntax:
- *   edit calendar --name <oldName>
- *                 --property <name|timezone>
- *                 <newValue>
  */
 public class EditCalendarCommand implements ManagerCommand {
   private final String cmd;
 
+  /**
+   * Constructs the command used to edit calendars.
+   *
+   * @param cmd string
+   */
   public EditCalendarCommand(String cmd) {
     this.cmd = cmd.trim();
   }
@@ -25,7 +25,7 @@ public class EditCalendarCommand implements ManagerCommand {
   @Override
   public void execute(ICalendarManager mgr, ITextView view) {
     // 1) extract the calendar we're talking about
-    String oldName = Command.getWordAfter("--name",     cmd);
+    String oldName = Command.getWordAfter("--name", cmd);
 
     // 2) extract which property
     String property = Command.getWordAfter("--property", cmd);

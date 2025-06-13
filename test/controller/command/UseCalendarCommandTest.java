@@ -2,8 +2,11 @@ package controller.command;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+/**
+ * Tests that we can use a calendar.
+ */
 public class UseCalendarCommandTest {
 
   @Test
