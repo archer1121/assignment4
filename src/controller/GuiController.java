@@ -38,6 +38,10 @@ public class GuiController implements IGuiView.Features {
   public void createEvent(String subject,
                           LocalTime startTime, LocalDate startDate,
                           LocalTime endTime, LocalDate endDate) {
+
+    LocalTime defaultStartTime = defaultStartTimeIfNull(startTime);
+    LocalTime defaultEndTime = defaultEndTimeIfNull(endTime);
+
     try {
       Event newEv = Event.getBuilder()
               .subject(subject)
@@ -46,15 +50,15 @@ public class GuiController implements IGuiView.Features {
                       startDate.getMonthValue(),
                       startDate.getYear())
               .startTime(
-                      startTime.getHour(),
-                      startTime.getMinute())
+                      defaultStartTime.getHour(),
+                      defaultStartTime.getMinute())
               .endDate(
                       endDate.getDayOfMonth(),
                       endDate.getMonthValue(),
                       endDate.getYear())
               .endTime(
-                      endTime.getHour(),
-                      endTime.getMinute()
+                      defaultEndTime.getHour(),
+                      defaultEndTime.getMinute()
               )
               .buildEvent();
       current.addEvent(newEv);
@@ -112,14 +116,16 @@ public class GuiController implements IGuiView.Features {
           LocalTime newStartTime, LocalDate newStartDate,
           LocalTime newEndTime, LocalDate newEndDate) {
     try {
+      LocalTime defaultStartTime = defaultStartTimeIfNull(newStartTime);
+      LocalTime defaultEndTime = defaultEndTimeIfNull(newEndTime);
 
       IEvent modified = Event.editEvent((Event) event)
 
               /* very verbose, I should've handled it when implementing */
               .subject(newSubject)
               .startTime(
-                      newStartTime.getHour(),
-                      newStartTime.getMinute()
+                      defaultStartTime.getHour(),
+                      defaultStartTime.getMinute()
               )
               .startDate(
                       newStartDate.getDayOfMonth(),
@@ -127,8 +133,8 @@ public class GuiController implements IGuiView.Features {
                       newStartDate.getYear()
               )
               .endTime(
-                      newEndTime.getHour(),
-                      newEndTime.getMinute()
+                      defaultEndTime.getHour(),
+                      defaultEndTime.getMinute()
               )
               .endDate(
                       newEndDate.getDayOfMonth(),
@@ -149,5 +155,21 @@ public class GuiController implements IGuiView.Features {
     cursor = start;
     CalendarAppState.get().setCursorDate(start);
     view.refresh();
+  }
+
+  private LocalTime defaultEndTimeIfNull(LocalTime endTime) {
+    if (endTime != null) {
+     return  endTime;
+    } else {
+      return LocalTime.of(17, 0);
+    }
+  }
+
+  private LocalTime defaultStartTimeIfNull(LocalTime startTime) {
+    if (startTime != null) {
+      return  startTime;
+    } else {
+      return LocalTime.of(8, 0);
+    }
   }
 }
