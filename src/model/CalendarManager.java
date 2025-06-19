@@ -16,7 +16,7 @@ public class CalendarManager implements ICalendarManager {
     this.calendars = new HashMap<>();
   }
 
-  // in CalendarManager.java
+
   @Override
   public List<String> getCalendars() {
     // Return the keys (names) of the map
@@ -68,6 +68,16 @@ public class CalendarManager implements ICalendarManager {
       throw new IllegalArgumentException("Calendar name already taken: " + name);
     }
   }
+
+  @Override
+  public ICalendar getOrCreateDefault() {
+    final String defaultName = "default";
+    if (!calendars.containsKey(defaultName)) {
+      calendars.put(defaultName, new Calendar());  // model.Calendar
+    }
+    return calendars.get(defaultName);
+  }
+
 
 
 }

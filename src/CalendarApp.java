@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import controller.CalendarController;
+import controller.GuiController;
 import model.CalendarManager;
+import view.CalendarGuiView;
 
 /**
  * The main program and entry point.
@@ -17,48 +19,39 @@ public class CalendarApp {
    * The enetry point.
    * @param args command line args
    */
-  public static void main(String[] args) {
-    try {
-      run(args, System.in, System.out);
-    } catch (IllegalArgumentException | IOException e) {
-      System.err.println("ERROR: " + e.getMessage());
-      System.exit(1);
-    }
-  }
-
-  /**
-   * Core entry-point. Throws instead of exiting on bad args, so tests can catch failures.
-   */
-  static void run(String[] args, InputStream in, Appendable out)
-          throws IOException {
-    String usage = "Usage: java CalendarApp --mode <interactive|headless> [commandsFile]";
-
-    if (args.length < 2) {
-      throw new IllegalArgumentException("Not enough arguments.\n" + usage);
-    }
-    if (!args[0].equalsIgnoreCase("--mode")) {
-      throw new IllegalArgumentException("First argument must be --mode\n" + usage);
-    }
-
-    String mode = args[1].toLowerCase();
+  public static void main(String[] args) throws Exception {
     CalendarManager mgr = new CalendarManager();
 
-    if ("interactive".equals(mode)) {
-      new CalendarController(mgr, new InputStreamReader(in), out).goo();
-
-    } else if ("headless".equals(mode)) {
-      if (args.length < 3) {
-        throw new IllegalArgumentException("Headless mode requires a commands file\n" + usage);
-      }
-      String file = args[2];
-      try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-        new CalendarController(mgr, reader, out).goo();
-      } catch (FileNotFoundException e) {
-        throw new IllegalArgumentException("File not found: " + file);
-      }
-
-    } else {
-      throw new IllegalArgumentException("Unknown mode \"" + args[1] + "\"\n" + usage);
+    if (args.length == 0) {                       // GUI
+      CalendarGuiView gui = new CalendarGuiView();
+      new GuiController(mgr, gui);                // controller wires itself up
+      gui.setVisible(true);
+      return;
     }
+
+    if ("--mode".equals(args[0]) && args.length >= 2) {
+      switch (args[1]) {
+        case "interactive":
+          new CalendarController(mgr, new java.io.InputStreamReader(System.in),
+                  System.out).goo();
+          return;
+
+        case "headless":
+          if (args.length != 3)
+            throw new IllegalArgumentException(
+                    "Usage: --mode headless <script-file>");
+          try (FileReader r = new FileReader(args[2])) {
+            new CalendarController(mgr, r, System.out).goo();
+          }
+          return;
+
+        default:
+          break;
+      }
+    }
+    System.err.println("Invalid arguments. "
+            + "Usage:\n  (no args) GUI\n  --mode interactive\n"
+            + "  --mode headless <script>");
+    System.exit(1);
   }
 }

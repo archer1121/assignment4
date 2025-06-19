@@ -16,4 +16,6 @@ public interface ICalendarManager {
   void addCalendar(String name, ICalendar calendar);    // needs somewhere which creates calendars
 
   void removeCalendar(String name);
+
+  ICalendar getOrCreateDefault();
 }
