@@ -69,7 +69,18 @@ public class EventFormDialog extends JDialog {
     btnBox.add(okBtn); btnBox.add(cancel);
     add(btnBox, BorderLayout.SOUTH);
 
-    okBtn.addActionListener(e -> { ok = true; dispose(); });
+    okBtn.addActionListener(e -> {
+      if (getSubject().isEmpty()) {
+        JOptionPane.showMessageDialog(this,
+                "Subject cannot be empty.",
+                "Input Error",
+                JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+      ok = true;
+      dispose();
+    });
+
     cancel.addActionListener(e -> dispose());
 
     pack();

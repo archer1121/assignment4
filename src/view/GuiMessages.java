@@ -9,5 +9,5 @@ public final class GuiMessages {
             "Error", JOptionPane.ERROR_MESSAGE);
   }
 
-  private GuiMessages() { }  // prevent instantiation
+  private GuiMessages() { }  //prevent instantiation
 }
