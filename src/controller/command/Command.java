@@ -62,7 +62,7 @@ public interface Command {
       throw new IllegalArgumentException("command must not be null");
     }
 
-    // 1) Find the index of the first occurrence of wordBefore
+    //Find the index of the first occurrence of wordBefore
     int beforeIdx = command.indexOf(wordBefore);
     if (beforeIdx < 0) {
       throw new IllegalArgumentException(
@@ -70,29 +70,29 @@ public interface Command {
       );
     }
 
-    // 2) Advance past `wordBefore`
+    // advance past `wordBefore`
     int cursor = beforeIdx + wordBefore.length();
 
-    // 3) Skip any whitespace after wordBefore
+    // Skip any whitespace after wordBefore
     while (cursor < command.length() && Character.isWhitespace(command.charAt(cursor))) {
       cursor++;
     }
 
-    // 4) If we've reached the end of the string, there's no word after
+    //If we've reached the end of the string, there's no word after
     if (cursor >= command.length()) {
       throw new IllegalArgumentException(
               String.format("No word found after \"%s\" in: \"%s\"", wordBefore, command)
       );
     }
 
-    // 5) Now `cursor` is at the start of the next word; find its end
+    //   Now `cursor` is at the start of the next word; find its end
     int startOfNextWord = cursor;
     while (cursor < command.length() && !Character.isWhitespace(command.charAt(cursor))) {
       cursor++;
     }
     int endOfNextWord = cursor;
 
-    // 6) Extract and return the word
+    //extract and return the word
     return command.substring(startOfNextWord, endOfNextWord);
   }
 }

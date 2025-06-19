@@ -4,7 +4,7 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.TimeZone;
+
 
 import model.Calendar;
 import model.Event;
@@ -21,19 +21,23 @@ public class GuiController implements IGuiView.Features {
   private final IGuiView view;
   private LocalDate cursor = LocalDate.now();   // schedule start date
 
+  private String defaultCalendarName = "My Calendar";
+
   public GuiController(ICalendarManager mgr, IGuiView view) {
     this.mgr = mgr;
     this.view = view;
-    this.current = mgr.getOrCreateDefault();   // default calendar
+    this.current = mgr.getOrCreateDefault();   //default calendar
 
-    // --- initialise global GUI state *before* any view code runs ---
-    CalendarAppState.get().init(current);      // sets activeCalendar & cursorDate
+    // initialise global GUI state *before* any view code runs
 
+    CalendarAppState.get().init(mgr, defaultCalendarName, current);
+    CalendarAppState.get().setFeatures(this);
     view.setFeatures(this);
-    view.refresh();                            // safe now
+    view.refresh();
+
   }
 
-  // ----- Features -----
+  //Features
   @Override
   public void createEvent(String subject,
                           LocalTime startTime, LocalDate startDate,
