@@ -80,11 +80,13 @@ public class EditCommandTest {
     cal.addEvent(original);
 
     new EditCommand(
-            "edit event start Meeting from 2025-06-10T09:00 to 2025-06-10T10:00 with 2025-06-10T09:30"
+            "edit event start Meeting from 2025-06-10T09:00 to" +
+                    " 2025-06-10T10:00 with 2025-06-10T09:30"
     ).execute(cal, DUMMY_VIEW);
 
     IEvent e = cal.getScheduleInRange(
-            LocalDate.of(2025,6,10), LocalDate.of(2025,6,10)
+            LocalDate.of(2025,6,10),
+            LocalDate.of(2025,6,10)
     ).get(0);
     assertEquals(LocalTime.of(9,30), e.getStartTime());
     assertEquals(LocalTime.of(10,0), e.getEndTime());
@@ -104,7 +106,8 @@ public class EditCommandTest {
     ).execute(cal, DUMMY_VIEW);
 
     IEvent e = cal.getScheduleInRange(
-            LocalDate.of(2025,6,12), LocalDate.of(2025,6,12)
+            LocalDate.of(2025,6,12),
+            LocalDate.of(2025,6,12)
     ).get(0);
     assertEquals(LocalTime.of(15,30), e.getEndTime());
   }
@@ -124,7 +127,8 @@ public class EditCommandTest {
     ).execute(cal, DUMMY_VIEW);
 
     IEvent e = cal.getScheduleInRange(
-            LocalDate.of(2025,6,20), LocalDate.of(2025,6,20)
+            LocalDate.of(2025,6,20),
+            LocalDate.of(2025,6,20)
     ).get(0);
     assertEquals("New", e.getDescription());
   }
@@ -144,7 +148,8 @@ public class EditCommandTest {
     ).execute(cal, DUMMY_VIEW);
 
     IEvent e = cal.getScheduleInRange(
-            LocalDate.of(2025,6,25), LocalDate.of(2025,6,25)
+            LocalDate.of(2025,6,25),
+            LocalDate.of(2025,6,25)
     ).get(0);
     assertEquals(EventLocation.ONLINE, e.getLocation());
   }
@@ -164,7 +169,8 @@ public class EditCommandTest {
     ).execute(cal, DUMMY_VIEW);
 
     IEvent e = cal.getScheduleInRange(
-            LocalDate.of(2025,6,30), LocalDate.of(2025,6,30)
+            LocalDate.of(2025,6,30),
+            LocalDate.of(2025,6,30)
     ).get(0);
     assertEquals(EventStatus.PUBLIC, e.getStatus());
   }

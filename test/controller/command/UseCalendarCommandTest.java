@@ -17,6 +17,7 @@ public class UseCalendarCommandTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testMissingNameFails() {
+
     new UseCalendarCommand("use calendar").getCalendarName();
   }
 }

@@ -15,7 +15,6 @@ import java.time.ZoneId;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Unit‐tests for CreateCommand.
@@ -195,7 +194,6 @@ public class CreateCommandTest {
   private final ICalendar dummyCal = new DummyCal();
   private final ITextView dummyView = new DummyView();
 
-  // ─── smoke‐tests with real assertions ─────────────────────────────────
 
 
 

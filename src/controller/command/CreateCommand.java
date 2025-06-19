@@ -17,7 +17,7 @@ public class CreateCommand implements Command {
   private final String cmd;
 
   /**
-   * Creates an event,
+   * Creates an event.
    *
    * @param command string
    */

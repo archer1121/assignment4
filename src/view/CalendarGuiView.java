@@ -25,7 +25,7 @@ public class CalendarGuiView extends JFrame implements IGuiView {
     JSpinner dateSpinner = new JSpinner(
             new SpinnerDateModel(java.sql.Date.valueOf(LocalDate.now()),
                     null, null, Calendar.DAY_OF_MONTH));
-    dateSpinner.setEditor(new JSpinner.DateEditor(dateSpinner, "yyyy-MM-dd"));
+    dateSpinner.setEditor(new JSpinner.DateEditor(dateSpinner, "dd-MM-yyyy"));
     JButton jumpBtn = new JButton("Go");
     JButton newBtn  = new JButton("New Event");
     bar.add(dateSpinner); bar.add(jumpBtn); bar.addSeparator(); bar.add(newBtn);
@@ -42,8 +42,11 @@ public class CalendarGuiView extends JFrame implements IGuiView {
       EventFormDialog dlg = new EventFormDialog(this);
       dlg.setVisible(true);
       if (dlg.isOk()) {
-        features.createEvent(dlg.getSubject(),
-                dlg.getStart(), dlg.getEnd());
+        features.createEvent(
+                dlg.getSubject(),
+                dlg.getStartTime(),dlg.getStartDate(),
+                dlg.getEndTime(), dlg.getEndDate()
+        );
       }
     });
 
@@ -56,7 +59,10 @@ public class CalendarGuiView extends JFrame implements IGuiView {
   @Override public void refresh() { schedulePanel.refresh(); }
 
   private static LocalDate toLocal(JSpinner spin) {
-    Date d = ((Date) spin.getValue());
-    return d.toLocalDate();
+    java.util.Date d = (java.util.Date) spin.getValue();
+    return d.toInstant()
+            .atZone(java.time.ZoneId.systemDefault())
+            .toLocalDate();
   }
+
 }

@@ -1,8 +1,12 @@
 
 package controller.command;
 
-import model.*;
 import model.Calendar;
+
+import model.Event;
+import model.ICalendar;
+import model.IEvent;
+import model.IEventSeries;
 import view.ITextView;
 
 import org.junit.Test;
@@ -58,7 +62,8 @@ public class ShowCommandTest {
     }
 
     @Override
-    public void copyEventsAndShift(LocalDate rangeStart, LocalDate rangeEnd, ICalendar from, LocalDate atStartDate) {
+    public void copyEventsAndShift(LocalDate rangeStart, LocalDate rangeEnd,
+                                   ICalendar from, LocalDate atStartDate) {
       //comment
     }
 

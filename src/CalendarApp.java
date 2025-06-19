@@ -1,9 +1,6 @@
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
+
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+
 
 import controller.CalendarController;
 import controller.GuiController;
@@ -37,9 +34,10 @@ public class CalendarApp {
           return;
 
         case "headless":
-          if (args.length != 3)
+          if (args.length != 3) {
             throw new IllegalArgumentException(
                     "Usage: --mode headless <script-file>");
+          }
           try (FileReader r = new FileReader(args[2])) {
             new CalendarController(mgr, r, System.out).goo();
           }

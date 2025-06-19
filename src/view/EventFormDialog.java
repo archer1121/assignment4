@@ -3,35 +3,66 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Calendar;
 
 public class EventFormDialog extends JDialog {
   private final JTextField subjectField = new JTextField(20);
   private final JSpinner   startSpin;
   private final JSpinner   endSpin;
+
+  private final JSpinner startTimeSpin;
+  private final JSpinner endTimeSpin;
   private boolean ok = false;            // set to true if user hit OK
 
   public EventFormDialog(Frame owner) {
     super(owner, "New Event", true);
     setLayout(new BorderLayout());
 
-    // ---------- date spinners ----------
+    //time spin
+    // Create today’s date at 08:00 and 17:00
+    java.util.Calendar cal = java.util.Calendar.getInstance();
+
+    cal.set(Calendar.HOUR_OF_DAY, 8);
+    cal.set(Calendar.MINUTE, 0);
+    cal.set(Calendar.SECOND, 0);
+    cal.set(Calendar.MILLISECOND, 0);
+    java.util.Date startDefault = cal.getTime();
+
+    cal.set(Calendar.HOUR_OF_DAY, 17);
+    java.util.Date endDefault = cal.getTime();
+
+    // Set spinners
+    startTimeSpin = new JSpinner(new SpinnerDateModel(startDefault, null, null, Calendar.MINUTE));
+    startTimeSpin.setEditor(new JSpinner.DateEditor(startTimeSpin, "HH:mm"));
+
+    endTimeSpin = new JSpinner(new SpinnerDateModel(endDefault, null, null, Calendar.MINUTE));
+    endTimeSpin.setEditor(new JSpinner.DateEditor(endTimeSpin, "HH:mm"));
+
+
+
+    //date spinners
     java.sql.Date today = java.sql.Date.valueOf(LocalDate.now());
     startSpin = new JSpinner(new SpinnerDateModel(today, null, null,
             Calendar.DAY_OF_MONTH));
-    startSpin.setEditor(new JSpinner.DateEditor(startSpin, "yyyy-MM-dd"));
     endSpin   = new JSpinner(new SpinnerDateModel(today, null, null,
             Calendar.DAY_OF_MONTH));
-    endSpin.setEditor(new JSpinner.DateEditor(endSpin, "yyyy-MM-dd"));
 
-    // ---------- central form ----------
-    JPanel form = new JPanel(new GridLayout(3, 2, 5, 5));
+    startSpin.setEditor(new JSpinner.DateEditor(startSpin, "dd-MM-yyyy"));
+    endSpin.setEditor(new JSpinner.DateEditor(endSpin, "dd-MM-yyyy"));
+
+
+    //central form
+    JPanel form = new JPanel(new GridLayout(5, 2, 5, 5));
     form.add(new JLabel("Subject:"));    form.add(subjectField);
     form.add(new JLabel("Start date:")); form.add(startSpin);
+    form.add(new JLabel("Start time:")); form.add(startTimeSpin);
     form.add(new JLabel("End date:"));   form.add(endSpin);
+    form.add(new JLabel("End time:"));   form.add(endTimeSpin);
     add(form, BorderLayout.CENTER);
 
-    // ---------- buttons ----------
+
+
     JButton okBtn  = new JButton("OK");
     JButton cancel = new JButton("Cancel");
     JPanel btnBox  = new JPanel();
@@ -45,18 +76,38 @@ public class EventFormDialog extends JDialog {
     setLocationRelativeTo(owner);
   }
 
-  /* ----- getters the controller needs ----- */
   public boolean isOk()      { return ok; }
 
-  public String getSubject() { return subjectField.getText().trim(); }
 
-  public LocalDate getStart() {
-    java.sql.Date d = ((java.sql.Date) startSpin.getValue());
-    return d.toLocalDate();
+
+
+
+
+  private static LocalDate toLocalDate(Object value) {
+    java.util.Date util = (java.util.Date) value;
+    return util.toInstant()
+            .atZone(java.time.ZoneId.systemDefault())
+            .toLocalDate();
   }
 
-  public LocalDate getEnd()   {
-    java.sql.Date d = ((java.sql.Date) endSpin.getValue());
-    return d.toLocalDate();
+  private static java.time.LocalTime toLocalTime(Object value) {
+    java.util.Date util = (java.util.Date) value;
+    return util.toInstant()
+            .atZone(java.time.ZoneId.systemDefault())
+            .toLocalTime()
+            .withSecond(0).withNano(0);
   }
+  // --- getters the controller uses ---
+  public String getSubject()      { return subjectField.getText().trim(); }
+  // These return LocalDate
+  public LocalDate getStartDate() { return toLocalDate(startSpin.getValue()); }
+  public LocalDate getEndDate()   { return toLocalDate(endSpin.getValue());   }
+
+  // These return LocalTime (once you add time spinners, if needed)
+  public LocalTime getStartTime() { return toLocalTime(startTimeSpin.getValue()); }
+  public LocalTime getEndTime()   { return toLocalTime(endTimeSpin.getValue()); }
+
+
+
+
 }
