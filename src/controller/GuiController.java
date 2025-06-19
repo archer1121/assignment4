@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import model.Event;
 import model.ICalendar;
 import model.ICalendarManager;
+import model.IEvent;
 import view.CalendarAppState;
 import view.GuiMessages;
 import view.IGuiView;
@@ -45,6 +46,26 @@ public class GuiController implements IGuiView.Features {
     } catch (IllegalArgumentException ex) {
       GuiMessages.error((Component) view, ex.getMessage());
     }
+  }
+
+  @Override
+  public void switchToCalendar(String name) {
+
+  }
+
+  @Override
+  public void createCalendar(String name) {
+
+  }
+
+  @Override
+  public void showSchedule(LocalDate start, LocalDate end) {
+
+  }
+
+  @Override
+  public void modifyEvent(IEvent event, String subject, LocalDate startDate, LocalDate endDate) {
+
   }
 
   @Override
