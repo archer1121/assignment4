@@ -9,10 +9,10 @@ public class EventFormDialog extends JDialog {
   private final JTextField subjectField = new JTextField(20);
   private final JSpinner   startSpin;
   private final JSpinner   endSpin;
-  private boolean ok = false;            // ➜ set to true if user hit OK
+  private boolean ok = false;            // set to true if user hit OK
 
   public EventFormDialog(Frame owner) {
-    super(owner, "New Event", true);     // modal
+    super(owner, "New Event", true);
     setLayout(new BorderLayout());
 
     // ---------- date spinners ----------
