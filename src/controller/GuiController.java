@@ -2,7 +2,11 @@ package controller;
 
 import java.awt.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.TimeZone;
 
+import model.Calendar;
 import model.Event;
 import model.ICalendar;
 import model.ICalendarManager;
@@ -18,8 +22,8 @@ public class GuiController implements IGuiView.Features {
   private LocalDate cursor = LocalDate.now();   // schedule start date
 
   public GuiController(ICalendarManager mgr, IGuiView view) {
-    this.mgr     = mgr;
-    this.view    = view;
+    this.mgr = mgr;
+    this.view = view;
     this.current = mgr.getOrCreateDefault();   // default calendar
 
     // --- initialise global GUI state *before* any view code runs ---
@@ -31,14 +35,27 @@ public class GuiController implements IGuiView.Features {
 
   // ----- Features -----
   @Override
-  public void createEvent(String subj, LocalDate s, LocalDate e) {
+  public void createEvent(String subject,
+                          LocalTime startTime, LocalDate startDate,
+                          LocalTime endTime, LocalDate endDate) {
     try {
       Event newEv = Event.getBuilder()
-              .subject(subj)
-              .startDate(s.getDayOfMonth(), s.getMonthValue(), s.getYear())
-              .startTime(8, 0)
-              .endDate(e.getDayOfMonth(), e.getMonthValue(), e.getYear())
-              .endTime(17, 0)
+              .subject(subject)
+              .startDate(
+                      startDate.getDayOfMonth(),
+                      startDate.getMonthValue(),
+                      startDate.getYear())
+              .startTime(
+                      startTime.getHour(),
+                      startTime.getMinute())
+              .endDate(
+                      endDate.getDayOfMonth(),
+                      endDate.getMonthValue(),
+                      endDate.getYear())
+              .endTime(
+                      endTime.getHour(),
+                      endTime.getMinute()
+              )
               .buildEvent();
       current.addEvent(newEv);
       // use your existing Event impl
@@ -50,22 +67,81 @@ public class GuiController implements IGuiView.Features {
 
   @Override
   public void switchToCalendar(String name) {
+    ICalendar to = mgr.getCalendar(name);
 
+    // get or make default with name and user tz if empty. throw if calendars exist
+    if (to == null) {
+      if (mgr.getCalendars().isEmpty()) {
+        mgr.addCalendar(name, new Calendar(ZoneId.systemDefault()));
+      } else {
+        GuiMessages.error((Component) view, "Calendar" + name + " not found");
+      }
+    } else {
+      current = to;
+    }
   }
 
   @Override
-  public void createCalendar(String name) {
+  public void createCalendar(String name, ZoneId zone) {
+    try {
+      mgr.addCalendar(name, new Calendar(zone));
+    } catch (IllegalArgumentException e) {
+      GuiMessages.error((Component) view, e.getMessage());
+    }
+  }
 
+  @Override
+  public void removeCalendar(String name) {
+    try {
+      mgr.removeCalendar(name);
+    }
+    catch (IllegalArgumentException e) {
+      GuiMessages.error((Component) view, e.getMessage());
+    }
   }
 
   @Override
   public void showSchedule(LocalDate start, LocalDate end) {
-
+    // if baked into view, it may be unnecessary
   }
 
   @Override
-  public void modifyEvent(IEvent event, String subject, LocalDate startDate, LocalDate endDate) {
+  public void modifyEvent(
+          IEvent event,
+          String newSubject,
+          LocalTime newStartTime, LocalDate newStartDate,
+          LocalTime newEndTime, LocalDate newEndDate) {
+    try {
 
+      IEvent modified = Event.editEvent((Event) event)
+
+              /* very verbose, I should've handled it when implementing */
+              .subject(newSubject)
+              .startTime(
+                      newStartTime.getHour(),
+                      newStartTime.getMinute()
+              )
+              .startDate(
+                      newStartDate.getDayOfMonth(),
+                      newStartDate.getMonthValue(),
+                      newStartDate.getYear()
+              )
+              .endTime(
+                      newEndTime.getHour(),
+                      newEndTime.getMinute()
+              )
+              .endDate(
+                      newEndDate.getDayOfMonth(),
+                      newEndDate.getMonthValue(),
+                      newEndDate.getYear()
+              )
+              .buildEvent();
+
+      current.replaceEvent(event, modified);
+
+    } catch (IllegalArgumentException e) {
+      GuiMessages.error((Component) view, e.getMessage());
+    }
   }
 
   @Override
