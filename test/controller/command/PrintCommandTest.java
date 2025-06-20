@@ -19,7 +19,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Unit‐tests for @link PrintCommand.
+ * Unit‐tests for PrintCommand.
  */
 public class PrintCommandTest {
 

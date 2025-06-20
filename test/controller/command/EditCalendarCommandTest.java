@@ -15,7 +15,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests editing a command.
+ * A Test class to ensure the Edit Calendar Command works as intended.
  */
 public class EditCalendarCommandTest {
 

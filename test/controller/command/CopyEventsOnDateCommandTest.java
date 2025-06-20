@@ -16,7 +16,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Test copying events on a given date.
+ *  A Test class to ensure the CopyEventsOnDate Command works as intended.
  */
 public class CopyEventsOnDateCommandTest {
   private ICalendarManager mgr;

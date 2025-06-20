@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A Simple Implementation of the ITextView Interface which prints to
+ * A Simple Implementation of the ITextView Interface. This class allows output to be decoupled from
+ * one particular source.
  */
 public class TextView implements ITextView {
   private final List<String> textBuffer;

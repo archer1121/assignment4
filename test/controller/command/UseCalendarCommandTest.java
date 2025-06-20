@@ -5,7 +5,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests that we can use a calendar.
+ *  A Test class to ensure the Use Calendar Command works as intended.
  */
 public class UseCalendarCommandTest {
 

@@ -25,9 +25,10 @@ import static org.junit.Assert.assertThrows;
 public class EventSeriesTest {
   private static final IDateTimeFacade facade = new DateTimeFacade();
   EventSeries.EventSeriesBuilder seriesBuilder;
+
   @Before
   public void setUp() {
-     seriesBuilder = EventSeries.getBuilder();
+    seriesBuilder = EventSeries.getBuilder();
   }
 
   @Test
@@ -53,6 +54,7 @@ public class EventSeriesTest {
             .seriesEndDate(facade.dateOf(4,2,2021));;
     assertThrows(IllegalArgumentException.class, () -> seriesBuilder.buildSeries());
   }
+
   @Test
   public void seriesThrowsWhenNoSeriesEndDateIsSet() {
     seriesBuilder = seriesBuilder

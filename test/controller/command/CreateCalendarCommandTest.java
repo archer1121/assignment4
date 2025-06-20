@@ -17,7 +17,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for creating a calendar.
+ *  A Test class to ensure the Create Calendar Command works as intended.
  */
 public class CreateCalendarCommandTest {
   private ICalendarManager mgr;

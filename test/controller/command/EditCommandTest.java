@@ -16,7 +16,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Test edit command.
+ *  A Test class to ensure the Edit Command works as intended.
  */
 public class EditCommandTest {
 

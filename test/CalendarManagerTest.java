@@ -59,7 +59,7 @@ public class CalendarManagerTest {
 
     manager.addCalendar("TestCal", calendar);
     manager.removeCalendar(name);
-   assertEquals(0, manager.getCalendars().size());
+    assertEquals(0, manager.getCalendars().size());
   }
 
   @Test

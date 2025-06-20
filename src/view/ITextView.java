@@ -26,7 +26,7 @@ public interface ITextView {
   void displayTextInBuffer() throws IOException;
 
   /**
-   * Returns the text currently stored in this View
+   * Returns the text currently stored in this View.
    *
    * @return List of all stored messages.
    */

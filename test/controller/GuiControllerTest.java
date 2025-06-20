@@ -23,13 +23,12 @@ import static org.junit.Assert.*;
  */
 public class GuiControllerTest {
 
-  private MockCalendar mockCalendar;
   private MockView mockView;
   private GuiController controller;
 
   @Before
   public void setUp() {
-    mockCalendar = new MockCalendar();
+    MockCalendar mockCalendar = new MockCalendar();
     mockView     = new MockView();
     MockManager manager = new MockManager(mockCalendar);
 
@@ -71,21 +70,68 @@ public class GuiControllerTest {
   private static class MockCalendar implements ICalendar {
     final List<IEvent> addedEvents = new ArrayList<>();
 
-    @Override public void addEvent(IEvent e) { addedEvents.add(e); }
+    @Override
+    public void addEvent(IEvent e) { addedEvents.add(e); }
 
     /* Remaining ICalendar methods stubbed out */
-    @Override public void removeEvent(IEvent e) {}
-    @Override public void copyEventsAndShift(LocalDate rs, LocalDate re, ICalendar f, LocalDate at) {}
-    @Override public void copyEvents(LocalDate rs, LocalDate re, ICalendar f) {}
-    @Override public void replaceEvent(IEvent o, IEvent n) {}
-    @Override public void addEventSeries(IEventSeries s) {}
-    @Override public void removeEventSeries(IEventSeries s) {}
-    @Override public void replaceSeries(IEventSeries o, IEventSeries n) {}
-    @Override public List<IEvent> getEvents() { return new ArrayList<>(); }
-    @Override public List<IEvent> getScheduleInRange(LocalDate s, LocalDate e) { return new ArrayList<>(); }
-    @Override public IEventSeries getSeriesFor(IEvent e) { return null; }
-    @Override public ZoneId getTimeZone() { return ZoneId.systemDefault(); }
-    @Override public ICalendar setTimeZone(ZoneId tz) { return this; }
+    @Override
+    public void removeEvent(IEvent e) {
+
+    }
+
+    @Override
+    public void copyEventsAndShift(LocalDate rs, LocalDate re, ICalendar f, LocalDate at) {
+
+    }
+
+    @Override
+    public void copyEvents(LocalDate rs, LocalDate re, ICalendar f) {
+
+    }
+
+    @Override
+    public void replaceEvent(IEvent o, IEvent n) {
+
+    }
+
+    @Override
+    public void addEventSeries(IEventSeries s) {
+
+    }
+
+    @Override
+    public void removeEventSeries(IEventSeries s) {
+
+    }
+
+    @Override
+    public void replaceSeries(IEventSeries o, IEventSeries n) {
+
+    }
+
+    @Override
+    public List<IEvent> getEvents() {
+      return new ArrayList<>();
+    }
+
+    @Override
+    public List<IEvent> getScheduleInRange(LocalDate s, LocalDate e) {
+      return new ArrayList<>();
+    }
+
+    @Override
+    public IEventSeries getSeriesFor(IEvent e) {
+      return null;
+    }
+
+    @Override
+    public ZoneId getTimeZone() {
+      return ZoneId.systemDefault(); }
+
+    @Override public ICalendar setTimeZone(ZoneId tz) {
+      return this;
+    }
+
   }
 
   /**
@@ -96,7 +142,9 @@ public class GuiControllerTest {
     boolean   refreshed    = false;
     LocalDate lastJumpedTo = null;
 
-    @Override public void setFeatures(Features f) { this.features = f; }
+    @Override public void setFeatures(Features f) {
+      this.features = f;
+    }
 
     @Override public void refresh() {
       refreshed = true;

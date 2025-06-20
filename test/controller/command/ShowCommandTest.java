@@ -20,7 +20,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Show command test.
+ * Tests for the Show Command to ensure correct functionality.
  */
 public class ShowCommandTest {
 
@@ -62,8 +62,9 @@ public class ShowCommandTest {
     }
 
     @Override
-    public void copyEventsAndShift(LocalDate rangeStart, LocalDate rangeEnd,
-                                   ICalendar from, LocalDate atStartDate) {
+    public void copyEventsAndShift(
+        LocalDate rangeStart, LocalDate rangeEnd,
+        ICalendar from, LocalDate atStartDate) {
       //comment
     }
 
