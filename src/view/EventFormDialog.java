@@ -1,10 +1,23 @@
 package view;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Frame;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Calendar;
+
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerDateModel;
+import javax.swing.JButton;
+
+
+
 
 public class EventFormDialog extends JDialog {
   private final JTextField subjectField = new JTextField(20);

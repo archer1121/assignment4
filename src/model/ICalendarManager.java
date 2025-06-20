@@ -35,13 +35,13 @@ public interface ICalendarManager {
   void addCalendar(String name, ICalendar calendar);    // needs somewhere which creates calendars
 
   /**
-   * Removes the calendar specified by the given name
+   * Removes the calendar specified by the given name.
    * @param name the identifier of the calendar to be removed.
    */
   void removeCalendar(String name);
 
   /**
-   * Gets or creates the calendar which is under the name 'default'
+   * Gets or creates the calendar which is under the name 'default'.
    * @return the default calendar.
    */
   ICalendar getOrCreateDefault();
